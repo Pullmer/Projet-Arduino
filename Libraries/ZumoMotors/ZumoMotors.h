@@ -18,7 +18,8 @@ class ZumoMotors
     static void setLeftSpeed(int speed);
     static void setRightSpeed(int speed);
     static void setSpeeds(int leftSpeed, int rightSpeed);
-    
+    static void setSpeeds(int Speed);
+
   private:
 
     static inline void init()

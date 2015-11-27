@@ -112,3 +112,9 @@ void ZumoMotors::setSpeeds(int leftSpeed, int rightSpeed)
   setLeftSpeed(leftSpeed);
   setRightSpeed(rightSpeed);
 }
+// set speed for both motors
+void ZumoMotors::setSpeeds(int Speed)
+{
+  setLeftSpeed(Speed);
+  setRightSpeed(Speed);
+}
