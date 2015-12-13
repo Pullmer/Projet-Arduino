@@ -1,45 +1,55 @@
 #include "Moteurs.h"
-#include "Arduino.h"
 
 #define DEVIATION_THRESHOLD 2
 #define DEFAULT_SPEED 400 // Maximum motor speed when going straight; variable speed when turning
 #define TURN_BASE_SPEED 300 // Base speed when turning (added to variable speed)
 
+double output_pid = 0;
+double input_pid = averageHeading();
+double consigne_pid = input_pid;
+
+PID PID_mot(&input_pid, &output_pid, &consigne_pid,2,5,1, DIRECT);
 ZumoMotors motors;
 
-void vitesse_mot(int leftspeed, int rightspeed)
+void init_PID()
 {
-  motors.setSpeeds(leftspeed, rightspeed);
+  PID_mot.SetMode(AUTOMATIC);
+  PID_mot.SetOutputLimits(200, 400);
 }
+
+void run_PID(boolean x)
+{
+  input_pid = averageHeading();
+  
+  if(x)
+  {
+    PID_mot.Compute();
+    vitesse_mot(output_pid, -output_pid);
+  }
+}
+
+void vitesse_mot(int leftspeed, int rightspeed)
+  {motors.setSpeeds(leftspeed, rightspeed);}
 
 void vitesse_mot(int x)
-{
-  motors.setSpeeds(x);
-}
+  {motors.setSpeeds(x);}
 
 void straight()
-{
-  motors.setSpeeds(DEFAULT_SPEED);
-}
+  {motors.setSpeeds(DEFAULT_SPEED);}
 
 void brake()
-{
-  motors.setSpeeds(0);
-}
+  {motors.setSpeeds(0);}
 
 void back()
-{
-  motors.setSpeeds(-DEFAULT_SPEED);
-}
+  {motors.setSpeeds(-DEFAULT_SPEED);}
 
 void setHeading_relatif(float target_heading)
-{
-  
-}
+  {setHeading_boussole(averageHeading() + target_heading);}
 
 void setHeading_boussole(float target_heading)
 {
-  unsigned long chrono = millis();
+  consigne_pid = target_heading;
+  /*unsigned long chrono = millis();
   
   if(target_heading <= 360.0 && target_heading >= 0)
   {
@@ -60,5 +70,5 @@ void setHeading_boussole(float target_heading)
       }
     }
   }
-  motors.setSpeeds(0);
+  motors.setSpeeds(0);*/
 }

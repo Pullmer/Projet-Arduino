@@ -1,26 +1,26 @@
 #include <SimpleTimer.h>
 #include <ZumoMotors.h>
-//#include <Pushbutton.h>
 #include "Centrale_inertielle.h"
 #include "Moteurs.h"
 #include "Capteurs_ultrasons.h"
 #include "Bat_level.h"
 
-//Pushbutton button(ZUMO_BUTTON);
 String buffer;
 SimpleTimer timer_obstacle;
-
+  
 void setup()
 {
   Serial.begin(115200);
   compass_init();
   calibrage();
-  timer_obstacle.setInterval(500, alerte);
+  init_PID();
+  timer_obstacle.setInterval(200, alerte);
 }
 
 void loop()
 {
   timer_obstacle.run();
+  run_PID(true);
   
   if(Serial.available() > 0)
   {

@@ -2,8 +2,11 @@
 #define Moteurs_h
 #include "Arduino.h"
 #include "Centrale_inertielle.h"
+#include <PID_v1.h>
 #include <ZumoMotors.h>
 
+void init_PID();
+void run_PID(boolean x);
 void vitesse_mot(int leftspeed, int rightspeed);
 void vitesse_mot(int speed);
 void straight();
