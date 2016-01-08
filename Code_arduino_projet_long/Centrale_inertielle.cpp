@@ -1,5 +1,6 @@
 #include "Centrale_inertielle.h"
 
+#define CALIBRATION_SAMPLES 70
 #define CRB_REG_M_2_5GAUSS 0x60 // CRB_REG_M value for magnetometer +/-2.5 gauss full scale
 #define CRA_REG_M_220HZ    0x1C // CRA_REG_M value for magnetometer 220 Hz update rate
 
@@ -7,10 +8,25 @@ LSM303 compass;
 
 void calibrage() // Set calibrated values to compass.m_max and compass.m_min
 {
-  compass.m_max.x = -102;
-  compass.m_max.y = 501;
-  compass.m_min.x = -307;
-  compass.m_min.y = 250;
+  LSM303::vector<int16_t> running_min = {32767, 32767};
+  LSM303::vector<int16_t> running_max = {-32767, -32767};
+  set_vitesse_mot(400, -400);
+  
+  for(int i = 0; i < CALIBRATION_SAMPLES; i++)
+  {
+    compass.read();
+    running_min.x = min(running_min.x, compass.m.x);
+    running_min.y = min(running_min.y, compass.m.y);
+    running_max.x = max(running_max.x, compass.m.x);
+    running_max.y = max(running_max.y, compass.m.y);
+    delay(50);
+  }
+  
+  run_previous_state_mot();
+  compass.m_max.x = running_max.x;
+  compass.m_max.y = running_max.y;
+  compass.m_min.x = running_min.x;
+  compass.m_min.y = running_min.y;
 }
 
 void compass_init()
@@ -21,6 +37,11 @@ void compass_init()
 
   compass.writeReg(LSM303::CRB_REG_M, CRB_REG_M_2_5GAUSS); // +/- 2.5 gauss sensitivity to hopefully avoid overflow problems
   compass.writeReg(LSM303::CRA_REG_M, CRA_REG_M_220HZ);    // 220 Hz compass update rate
+  
+  compass.m_max.x = -102;
+  compass.m_max.y = 501;
+  compass.m_min.x = -307;
+  compass.m_min.y = 250;
 }
 
 float averageHeading() // Average 10 vectors to get a better measurement and help smooth out the motors' magnetic interference.

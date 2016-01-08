@@ -1,12 +1,13 @@
 #include "Moteurs.h"
 
-#define DEVIATION_THRESHOLD 2
-#define DEFAULT_SPEED 400 // Maximum motor speed when going straight; variable speed when turning
-#define TURN_BASE_SPEED 300 // Base speed when turning (added to variable speed)
+#define MAX_SPEED 400 // Maximum motor speed when going straight; variable speed when turning
 
 double output_pid = 0;
 double input_pid = averageHeading();
 double consigne_pid = input_pid;
+
+int vitesse_mot[] = {0, 0};
+int previous_state_mot[] = {0, 0};
 
 PID PID_mot(&input_pid, &output_pid, &consigne_pid,2,5,1, DIRECT);
 ZumoMotors motors;
@@ -14,61 +15,70 @@ ZumoMotors motors;
 void init_PID()
 {
   PID_mot.SetMode(AUTOMATIC);
-  PID_mot.SetOutputLimits(200, 400);
+  PID_mot.SetOutputLimits(0, 50); // à modif
 }
 
-void run_PID(boolean x)
+void compute_PID()
 {
-  input_pid = averageHeading();
+  input_pid = averageHeading(); // varie de 0° à 360°
+  PID_mot.Compute();
   
-  if(x)
-  {
-    PID_mot.Compute();
-    vitesse_mot(output_pid, -output_pid);
-  }
+  previous_state_mot[0] = vitesse_mot[0];
+  previous_state_mot[1] = vitesse_mot[1];
+  vitesse_mot[0] = vitesse_mot[0] + output_pid; // A MODIF
+  vitesse_mot[1] = vitesse_mot[1] - output_pid;
 }
 
-void vitesse_mot(int leftspeed, int rightspeed)
-  {motors.setSpeeds(leftspeed, rightspeed);}
+void set_vitesse_mot(int leftspeed, int rightspeed)
+{
+  previous_state_mot[0] = vitesse_mot[0];
+  previous_state_mot[1] = vitesse_mot[1];
+  vitesse_mot[0] = leftspeed;
+  vitesse_mot[1] = rightspeed;
+  refresh_moteurs();
+}
 
-void vitesse_mot(int x)
-  {motors.setSpeeds(x);}
+void set_vitesse_mot(int x)
+{
+  previous_state_mot[0] = vitesse_mot[0];
+  previous_state_mot[1] = vitesse_mot[1];
+  vitesse_mot[0] = x;
+  vitesse_mot[1] = x;
+  refresh_moteurs();
+}
 
 void straight()
-  {motors.setSpeeds(DEFAULT_SPEED);}
+{
+  set_vitesse_mot(MAX_SPEED);
+}
 
 void brake()
-  {motors.setSpeeds(0);}
+{
+  set_vitesse_mot(0);
+}
 
 void back()
-  {motors.setSpeeds(-DEFAULT_SPEED);}
+{
+  set_vitesse_mot(-MAX_SPEED);
+}
+
+void refresh_moteurs()
+{
+  motors.setSpeeds(vitesse_mot[0], vitesse_mot[1]);
+}
+
+void run_previous_state_mot()
+{
+  vitesse_mot[0] = previous_state_mot[0];
+  vitesse_mot[1] = previous_state_mot[1];
+}
 
 void setHeading_relatif(float target_heading)
-  {setHeading_boussole(averageHeading() + target_heading);}
+{
+  setHeading_boussole(averageHeading() + target_heading);
+}
 
 void setHeading_boussole(float target_heading)
 {
   consigne_pid = target_heading;
-  /*unsigned long chrono = millis();
-  
-  if(target_heading <= 360.0 && target_heading >= 0)
-  {
-    for(int i = 0 ; i < 3 ; i++)
-    {
-      motors.setSpeeds(0);
-      delay(1000);
-      float relative_heading = relativeHeading(target_heading, averageHeading());
-    
-      while(abs(relative_heading) > DEVIATION_THRESHOLD && (millis() - chrono) < 5000)
-      {
-        if(relative_heading > 0)
-          motors.setSpeeds(-TURN_BASE_SPEED, TURN_BASE_SPEED);
-        else
-          motors.setSpeeds(TURN_BASE_SPEED, -TURN_BASE_SPEED);
-            
-        relative_heading = relativeHeading(target_heading, averageHeading());
-      }
-    }
-  }
-  motors.setSpeeds(0);*/
 }

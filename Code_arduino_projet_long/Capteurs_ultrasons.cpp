@@ -1,4 +1,5 @@
 #include "Capteurs_ultrasons.h"
+#include "Moteurs.h"
 
 #define TRIGGER_PIN  4  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     5  // Arduino pin tied to echo pin on the ultrasonic sensor.
@@ -19,13 +20,15 @@ void alerte()
 {
    if(obstacle() && !obstacle_detected) // obstacle détecté
    {
-    Serial.println("obstacle");
+    Serial.println("obstacle !");
     obstacle_detected = true;
+    brake(); // stop moteurs
    }
    else if(!obstacle() && obstacle_detected) // il n'y a plus d'obstacle
    {
+    run_previous_state_mot();
     obstacle_detected = false;
-    Serial.println("okoktest");
+    Serial.println("obstacle ok");
    }
 }
 

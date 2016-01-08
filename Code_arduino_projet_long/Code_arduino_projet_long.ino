@@ -12,7 +12,7 @@ void setup()
 {
   Serial.begin(115200);
   compass_init();
-  calibrage();
+  //calibrage(); // calibrage du magnetometre
   init_PID();
   timer_obstacle.setInterval(200, alerte);
 }
@@ -20,7 +20,7 @@ void setup()
 void loop()
 {
   timer_obstacle.run();
-  run_PID(true);
+  compute_PID();
   
   if(Serial.available() > 0)
   {
@@ -35,6 +35,7 @@ void loop()
       else if(buffer == "get_angle") Serial.println("Angle actuel : " + String(averageHeading()));
       else if(buffer == "back") back();
       else if(buffer == "bat_level") Serial.println("Niveau batterie : " + String(bat_level()));
+      else if(buffer == "calibrage") calibrage();
     }
     else Serial.read();
   }

@@ -6,12 +6,14 @@
 #include <ZumoMotors.h>
 
 void init_PID();
-void run_PID(boolean x);
-void vitesse_mot(int leftspeed, int rightspeed);
-void vitesse_mot(int speed);
+void compute_PID();
+void set_vitesse_mot(int leftspeed, int rightspeed);
+void set_vitesse_mot(int x);
 void straight();
 void brake();
 void back();
+void refresh_moteurs();
+void run_previous_state_mot();
 void setHeading_boussole(float target_heading);
 void setHeading_relatif(float target_heading);
 
