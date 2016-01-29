@@ -22,7 +22,7 @@ void alerte()
    {
     Serial.println("obstacle !");
     obstacle_detected = true;
-    brake(); // stop moteurs
+    set_vitesse_mot(0); // stop moteurs
    }
    else if(!obstacle() && obstacle_detected) // il n'y a plus d'obstacle
    {

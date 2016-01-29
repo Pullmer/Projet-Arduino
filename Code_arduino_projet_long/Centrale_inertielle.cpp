@@ -10,7 +10,8 @@ void calibrage() // Set calibrated values to compass.m_max and compass.m_min
 {
   LSM303::vector<int16_t> running_min = {32767, 32767};
   LSM303::vector<int16_t> running_max = {-32767, -32767};
-  set_vitesse_mot(400, -400);
+  
+  set_vitesse_mot(MAX_SPEED, -MAX_SPEED); // on fait tourner le robot sur lui même
   
   for(int i = 0; i < CALIBRATION_SAMPLES; i++)
   {
@@ -23,10 +24,16 @@ void calibrage() // Set calibrated values to compass.m_max and compass.m_min
   }
   
   run_previous_state_mot();
+  
   compass.m_max.x = running_max.x;
   compass.m_max.y = running_max.y;
   compass.m_min.x = running_min.x;
   compass.m_min.y = running_min.y;
+  
+  Serial.println(compass.m_max.x);
+  Serial.println(compass.m_max.y);
+  Serial.println(compass.m_min.x);
+  Serial.println(compass.m_min.y);
 }
 
 void compass_init()
@@ -38,10 +45,10 @@ void compass_init()
   compass.writeReg(LSM303::CRB_REG_M, CRB_REG_M_2_5GAUSS); // +/- 2.5 gauss sensitivity to hopefully avoid overflow problems
   compass.writeReg(LSM303::CRA_REG_M, CRA_REG_M_220HZ);    // 220 Hz compass update rate
   
-  compass.m_max.x = -102;
-  compass.m_max.y = 501;
-  compass.m_min.x = -307;
-  compass.m_min.y = 250;
+  compass.m_max.x = -98;
+  compass.m_max.y = 74;
+  compass.m_min.x = -316;
+  compass.m_min.y = -203;
 }
 
 float averageHeading() // Average 10 vectors to get a better measurement and help smooth out the motors' magnetic interference.
