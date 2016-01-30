@@ -4,10 +4,14 @@
 #include "Centrale_inertielle.h"
 #include <ZumoMotors.h>
 
-#define MAX_SPEED 400 // Maximum motor speed when going straight; variable speed when turning
-#define PID_SPEED 280 // Maximum motor speed when going straight; variable speed when turning
+#define MAX_SPEED_LEFT 370
+#define MAX_SPEED_RIGHT 400
+#define PID_SPEED 280
 
 void pid();
+void set_kp(float k);
+void set_kd(float k);
+void set_ki(float k);
 void set_vitesse_mot(int leftspeed, int rightspeed);
 void set_vitesse_mot(int x);
 void refresh_moteurs();
