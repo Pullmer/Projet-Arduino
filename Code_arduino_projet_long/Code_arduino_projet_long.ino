@@ -15,12 +15,11 @@ void setup()
 {
   Serial.begin(115200);
   compass_init();
-  delay(1500);
-  //calibrage();
+  delay(2000);
+  calibrage();
+  
   timer_obstacle.setInterval(200, alerte);
   timer_pid.setInterval(5, pid);
-  
-  setHeading_boussole(0);
 }
 
 void loop()

@@ -68,5 +68,31 @@ namespace Interface_PID
         {
             serialPort1.ReadLine();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (serialPort1.IsOpen) serialPort1.WriteLine("#straight;");
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (serialPort1.IsOpen) serialPort1.WriteLine("#stop;");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (serialPort1.IsOpen) serialPort1.WriteLine("#calibrage;");
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (serialPort1.IsOpen)
+            {
+                serialPort1.WriteLine(
+                    "#ki;" + numericUpDown_ki.Value.ToString() + ";"
+                    + "#kd;" + numericUpDown_kd.Value.ToString() + ";"
+                    + "#kp;" + numericUpDown_kp.Value.ToString() + ";");
+            }
+        }
     }
 }

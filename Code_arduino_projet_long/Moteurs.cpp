@@ -3,33 +3,28 @@
 int vitesse_mot[] = {0, 0};
 int previous_vitesse_mot[] = {0, 0};
 
-float consigne_angle = 0; // initialisation PID
+float consigne_angle = 50; // initialisation PID
 float erreur = 0;
 float erreur_precedente = 0;
 float somme_erreur = 0;
-float kp = 0;
-float kd = 0;
-float ki = 0;
+float kp = 15;
+float kd = 20;
+float ki = 0.007;
 float output_pid = 0;
 
 ZumoMotors motors;
 
 void pid()
 {  
-  if(abs(relativeHeading(consigne_angle, averageHeading())) > 5)
-  {
-    erreur = relativeHeading(consigne_angle, averageHeading()); // compris entre -180 et 180
-    somme_erreur += erreur;
-    /*if(somme_erreur > borne_max) somme_erreur = borne_max;
-    else if(somme_erreur < borne_min) somme_erreur = borne_min;*/
-    erreur_precedente = erreur;
-    
-    output_pid = kp*erreur + ki*somme_erreur + kd*(erreur - erreur_precedente);
-    if(output_pid < -370) output_pid = -370;
-    else if(output_pid > 370) output_pid = 370;
-    
-    set_vitesse_mot(-output_pid, output_pid);
-  }
+  erreur = relativeHeading(consigne_angle, averageHeading()); // compris entre -180 et 180
+  somme_erreur += erreur;
+  erreur_precedente = erreur;
+  
+  output_pid = kp*erreur + ki*somme_erreur + kd*(erreur - erreur_precedente);
+  if(output_pid < -370) output_pid = -370;
+  else if(output_pid > 370) output_pid = 370;
+  
+  if(vitesse_mot[0] == 0) set_vitesse_mot(-output_pid, output_pid);
 }
 
 void set_kp(float k)

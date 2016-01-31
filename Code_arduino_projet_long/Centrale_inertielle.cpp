@@ -45,10 +45,10 @@ void compass_init()
   compass.writeReg(LSM303::CRB_REG_M, CRB_REG_M_2_5GAUSS); // +/- 2.5 gauss sensitivity to hopefully avoid overflow problems
   compass.writeReg(LSM303::CRA_REG_M, CRA_REG_M_220HZ);    // 220 Hz compass update rate
   
-  compass.m_max.x = -43;
-  compass.m_max.y = 558;
-  compass.m_min.x = -267;
-  compass.m_min.y = 289;
+  compass.m_max.x = 25;
+  compass.m_max.y = 525;
+  compass.m_min.x = -198;
+  compass.m_min.y = 256;
 }
 
 float averageHeading() // Average 10 vectors to get a better measurement and help smooth out the motors' magnetic interference.
