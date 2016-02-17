@@ -25,10 +25,10 @@ class CameraDebugServer:
         print("socket ouvert")
 
     #----------------------------------------------------------------------
-    def sendData(self, image):
+    def sendData(self, data):
         """Transmission du flux vidéo sur le réseau"""
-        self.conn.send(str(len(image)).ljust(16))
-        self.conn.send(image)        
+        self.conn.send(str(len(data)).ljust(16))
+        self.conn.send(data)        
 
     #----------------------------------------------------------------------
     def __del__(self):

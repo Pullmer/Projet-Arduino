@@ -6,12 +6,12 @@
   Created: 16/02/2016
 """
 
-import server_camera
+import cameraDebugServer
 import picamera
 import picamera.array
 import time
 
-serveur = server_camera.CameraDebugServer()
+serveur = cameraDebugServer.CameraDebugServer()
 
 camera = picamera.PiCamera()
 camera.resolution = (400, 300)
