@@ -15,27 +15,21 @@ def recvall(sock, count):
     """"""
     buf = b''
     while count:
-        try:
-            newbuf = sock.recv(count)
-        except socket.error:
-            print("socket closed by server")
-        
-        if not newbuf:           
+        newbuf = sock.recv(count)
+        if not newbuf:
             return None
-        
         buf += newbuf
         count -= len(newbuf)
     return buf
 
 #----------------------------------------------------------------------
 
-resolution = (444, 250)
+resolution = (400, 300)
 TCP_IP = '10.0.0.200' # Adresse du serveur
 TCP_PORT = 8123
 
 sock = socket.socket()
 sock.connect((TCP_IP, TCP_PORT))
-
 cv2.namedWindow('Client')
 
 while(True):
@@ -44,15 +38,8 @@ while(True):
     
     if(length):
         stringData = recvall(sock, int(length))
-        
-        if(stringData):
-            data = numpy.fromstring(stringData, dtype='uint8').reshape(resolution[1], resolution[0], -1)
-            cv2.imshow('Client', data)
-        else:
-            try:
-                newbuf = sock.recv(count)
-            except socket.error:
-                print("socket closed by server")            
+        data = numpy.fromstring(stringData, dtype='uint8').reshape(resolution[1], resolution[0], -1)
+        cv2.imshow('Client', data)           
 
     if(cv2.waitKey(1) & 0xFF == ord('q')):
         break

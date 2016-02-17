@@ -15,12 +15,11 @@ class CameraDebugServer:
     #----------------------------------------------------------------------
     def __init__(self, port = 8123):
         """Constructor"""
-        self.TCP_IP = ''
         self.TCP_PORT = port
         
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.bind((self.TCP_IP, self.TCP_PORT))
+        self.s.bind(('', self.TCP_PORT))
         self.s.listen(True)
         self.conn, self.addr = self.s.accept()
         print("socket ouvert")
