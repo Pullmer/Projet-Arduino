@@ -9,15 +9,14 @@
 import cameraDebugServer
 import picamera
 import picamera.array
-import time
 
 serveur = cameraDebugServer.CameraDebugServer()
 
 camera = picamera.PiCamera()
-camera.resolution = (400, 300)
-camera.framerate = 5
+camera.led = False
+camera.resolution = (640, 480)
+camera.framerate = 15
 camera.hflip, camera.vflip = True, True
-time.sleep(1)
 
 while True:
     with picamera.array.PiRGBArray(camera) as stream:

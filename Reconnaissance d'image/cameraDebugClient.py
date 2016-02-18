@@ -24,8 +24,8 @@ def recvall(sock, count):
 
 #----------------------------------------------------------------------
 
-resolution = (400, 300)
-TCP_IP = '10.0.0.200' # Adresse du serveur
+resolution = (640, 480)
+TCP_IP = '10.12.152.110' # Adresse du serveur
 TCP_PORT = 8123
 
 sock = socket.socket()

@@ -8,14 +8,12 @@
 
 import picamera
 import qrCodeDecoder
-from os import remove
 
 camera = picamera.PiCamera()
 camera.resolution = (1280, 720)
 camera.hflip, camera.vflip = True, True
 
-camera.contrast = 70 #default 0
-camera.brightness = 40 #default 50
+camera.color_effects = (128,128) #noir et blanc
 
 camera.capture('qrcode.jpg')
 print("Lecture du QRCode : " + qrCodeDecoder.decode('qrcode.jpg'))
