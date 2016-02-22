@@ -29,8 +29,8 @@ def nothing(x):
     
 #----------------------------------------------------------------------
 
-resolution = (640, 480) # Résolution caméra
-TCP_IP = '10.12.152.110' # Adresse du serveur
+resolution = (420, 340) # Résolution caméra
+TCP_IP = '10.0.0.200' # Adresse du serveur
 TCP_PORT = 8123 # Port de communication
 
 sock = socket.socket()
@@ -39,7 +39,7 @@ sock.connect((TCP_IP, TCP_PORT))
 cv2.namedWindow('Reglages')
 cv2.createTrackbar("t1", "Reglages", 47, 255, nothing)
 cv2.createTrackbar("t2", "Reglages", 29, 255, nothing)
-cv2.createTrackbar("Threshold", "Reglages", 159, 255, nothing) # Longueur minimale admissible d'un segment
+cv2.createTrackbar("Threshold", "Reglages", 30, 255, nothing) # Longueur minimale admissible d'un segment
 
 while(True):
 
@@ -61,7 +61,7 @@ while(True):
         imgHoughLines = data.copy()
         
         try:
-            for i in range(min(10, len(HoughLines))):
+            for i in range(min(20, len(HoughLines))):
                 for rho, theta in HoughLines[i]:
                     a, b = numpy.cos(theta), numpy.sin(theta)
                     x0, y0 = a*rho, b*rho
@@ -74,14 +74,14 @@ while(True):
         except:
             pass
         
-        cv2.imshow("imgEdges", imgEdges);  
+        cv2.imshow("imgGray", imgGray); 
+        cv2.imshow("imgEdges", imgEdges); 
         cv2.imshow("Houghlines", imgHoughLines);  
         
         #----------------------------------------------------------------------
         
-    if cv2.waitKey(5) == 27: # Attend la touche "échap pendant 10ms"
-        print("Finish")
-        break
+    if(cv2.waitKey(1) & 0xFF == ord('q')):
+        break        
 
 sock.close()
 cv2.destroyAllWindows() 

@@ -12,7 +12,7 @@ import cv2
 
 #----------------------------------------------------------------------
 def recvall(sock, count):
-    """"""
+    """Receive data"""
     buf = b''
     while count:
         newbuf = sock.recv(count)
