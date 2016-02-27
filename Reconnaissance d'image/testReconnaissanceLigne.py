@@ -73,8 +73,6 @@ def keepVerticalLines(lines):
 #----------------------------------------------------------------------
 def deleteSameLines(lines):
     """Supprime les lignes quasi-superposées"""
-    pass
-
     return lines
     
 #----------------------------------------------------------------------
@@ -117,9 +115,15 @@ def main():
     print("Socket ouvert")
     
     cv2.namedWindow('Reglages')
+    cv2.resizeWindow('Reglages', 400, 400)
     cv2.createTrackbar("t1", "Reglages", 132, 255, nothing)
     cv2.createTrackbar("t2", "Reglages", 114, 255, nothing)
-    cv2.createTrackbar("Threshold", "Reglages", 65, 255, nothing) #Longueur minimale admissible d'un segment
+    cv2.createTrackbar("Threshold", "Reglages", 80, 255, nothing) #Longueur minimale admissible d'un segment
+    cv2.createTrackbar("minDist", "Reglages", 90, 255, nothing)
+    cv2.createTrackbar("param1", "Reglages", 80, 255, nothing)
+    cv2.createTrackbar("param2", "Reglages", 150, 255, nothing)
+    cv2.createTrackbar("minRadius", "Reglages", 30, 255, nothing)
+    cv2.createTrackbar("maxRadius", "Reglages", 90, 255, nothing)
     
     while(True):
         length = recvall(sock, 16)
@@ -128,24 +132,40 @@ def main():
             stringData = recvall(sock, int(length))
             data = numpy.fromstring(stringData, dtype='uint8').reshape(resolution[1], resolution[0], -1) #Image reçue 
             imgHoughLines = data.copy() #Création d'une copie de l'image
+            imgHoughCircle = data.copy() #Création d'une copie de l'image
             
             #----------------------------------------------------------------------
             
             t1 = cv2.getTrackbarPos("t1", "Reglages")
             t2 = cv2.getTrackbarPos("t2", "Reglages")
             HoughLinesThreshold = cv2.getTrackbarPos("Threshold", "Reglages")
+            mindist = cv2.getTrackbarPos("minDist", "Reglages")
+            p1 = cv2.getTrackbarPos("param1", "Reglages")
+            p2 = cv2.getTrackbarPos("param2", "Reglages")
+            minR = cv2.getTrackbarPos("minRadius", "Reglages")
+            maxR = cv2.getTrackbarPos("maxRadius", "Reglages")
             
             imgGray = cv2.cvtColor(data, cv2.COLOR_BGR2GRAY) #Conversion en niveau de gris
-            imgEdges = cv2.Canny(imgGray, t1, t2) #Détection des bords
-            houghLines = cv2.HoughLines(imgEdges, 1, 3*numpy.pi/180, HoughLinesThreshold) #Transformée de Hough Lines
-    
+            imgEdges = cv2.Canny(imgGray, t1, t2, apertureSize=3) #Binarisation de l'image
+            houghLines = cv2.HoughLines(imgEdges, 3, 5*numpy.pi/180, HoughLinesThreshold) #Transformée de Hough Lines
             houghLines = deleteSameLines(houghLines)
             imgHoughLines = drawLines(imgHoughLines, houghLines)
             imgHoughLines = drawMiddleLine(imgHoughLines, houghLines)
             
+            imgBlurred = cv2.medianBlur(imgGray, 5)
+            houghCircles = cv2.HoughCircles(imgBlurred, cv2.HOUGH_GRADIENT, 3, mindist, param1=p1, param2=p2, minRadius=minR, maxRadius=maxR)
+            if houghCircles is not None:
+                houghCircles = numpy.uint16(numpy.around(houghCircles))
+                for i in houghCircles[0,:]:
+                    # draw the outer circle
+                    cv2.circle(imgHoughCircle, (i[0], i[1]), i[2], (0, 255, 0), 2)
+                    # draw the center of the circle
+                    cv2.circle(imgHoughCircle, (i[0], i[1]), 2, (0, 0, 255), 3)            
+
             #Affichage 
             cv2.imshow("imgEdges", imgEdges);
-            cv2.imshow("Houghlines", imgHoughLines);
+            cv2.imshow("imgHoughLines", imgHoughLines);
+            cv2.imshow("imgHoughCircle", imgHoughCircle);
             
             #----------------------------------------------------------------------
             
