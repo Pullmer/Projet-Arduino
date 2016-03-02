@@ -9,11 +9,11 @@ class Controller:
 			self.fenetre = fenetre
 			self.queue = Queue.Queue()
 			self.labyrinthe = Labyrinthe(self)
+			self.robots = []
 			self.serveur = Serveur(self,self.labyrinthe)
 			self.ecran = Ecran(self,fenetre,self.queue)
 			
 			
-			self.serveur.start()
 			self.periodicCall()
 			
 	def periodicCall(self):
@@ -24,3 +24,25 @@ class Controller:
 		self.queue.put("chemin")
 		self.queue.put(ancienne_position)
 		self.queue.put(nouvelle_position)
+		
+	def ajouterRobot(self,robot):
+		self.robots.append(robot)
+		self.queue.put("nouveau robot")
+		
+	def details(self,id):
+		try:
+			robot = self.robots[id-1]
+			ip = robot.getIP()
+			position = robot.getPosition()
+			batterie = robot.getBatterie()
+			self.queue.put("details")
+			self.queue.put(id)
+			self.queue.put(ip)
+			self.queue.put(position)
+			self.queue.put(batterie)
+		except IndexError:
+			self.queue.put("details")
+			self.queue.put("erreur")
+		
+	def lancerServeur(self):
+		self.serveur.start()

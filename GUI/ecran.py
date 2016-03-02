@@ -3,6 +3,7 @@
 import Tkinter
 from Tkinter import *
 from tkMessageBox import *
+import Queue
 
 class Ecran():
 
@@ -24,6 +25,7 @@ class Ecran():
 		self.afficherInformations(zone2)
 		self.creerBoutons(zone2)
 		self.dessin = Canvas(zone1,width=400,height=400,background='yellow')
+		self.point1 = self.dessin.create_oval(192,392,208,408,fill='red')
 		self.dessin.pack()
 	
 	def dessinerLigne(self,coord1,coord2):
@@ -31,8 +33,11 @@ class Ecran():
 		
 	def creerMenu(self,fenetre):
 	
+		def details_robot(id):
+			self.controller.details(id)
+			
 		def alert():
-			showinfo('essai')
+			self.fenetre.quit()
 			
 		menubar = Menu(fenetre)
 		
@@ -44,9 +49,9 @@ class Ecran():
 		menubar.add_cascade(label="Fichier", menu=menu1)
 
 		menu2 = Menu(menubar, tearoff=0)
-		menu2.add_command(label="Robot 1", command=alert)
-		menu2.add_command(label="Robot 2", command=alert)
-		menu2.add_command(label="Robot 3", command=alert)
+		menu2.add_command(label="Robot 1", command=lambda : details_robot(1))
+		menu2.add_command(label="Robot 2", command=lambda : details_robot(2))
+		menu2.add_command(label="Robot 3", command=lambda : details_robot(3))
 		menubar.add_cascade(label="Robot", menu=menu2)
 
 		menu3 = Menu(menubar, tearoff=0)
@@ -85,6 +90,20 @@ class Ecran():
 						X2 = int(30*nouvelle[0]+200)
 						Y2 = int(-30*nouvelle[1]+400)
 						self.dessin.create_line(X1, Y1, X2, Y2,width=4)
+						self.dessin.coords(self.point1,X2-8,Y2-8,X2+8,Y2+8)
 						
+					if msg == "details":
+						id = self.queue.get(0)
+						if id=="erreur":
+							showinfo('exception','Ce robot n\'est pas connecté')
+						else:
+							ip = self.queue.get(0)
+							position = self.queue.get(0)
+							batterie = self.queue.get(0)
+							text = "Ce robot est en " + str(position) +". Il lui reste "+ str(batterie) +"% de batterie. Son adresse IP est : "+ str(ip)
+							showinfo('details du robot '+str(id),text)
+							
+					if msg == "nouveau robot":
+						showinfo('connexion','Un robot vient de se connecter')
 				except Queue.Empty:
 					pass	

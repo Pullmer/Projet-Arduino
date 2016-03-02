@@ -13,6 +13,7 @@ class Robot:
 			self.ancienne_position = (0,0)
 			self.labyrinthe = labyrinthe
 			self.controller = controller
+			controller.ajouterRobot(self)
 			
 			
 	#traitement de la chaine de caractère reçue
