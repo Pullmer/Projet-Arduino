@@ -116,13 +116,13 @@ def main():
     
     cv2.namedWindow('Reglages')
     cv2.resizeWindow('Reglages', 400, 400)
-    cv2.createTrackbar("t1", "Reglages", 132, 255, nothing)
-    cv2.createTrackbar("t2", "Reglages", 114, 255, nothing)
-    cv2.createTrackbar("Threshold", "Reglages", 80, 255, nothing) #Longueur minimale admissible d'un segment
+    cv2.createTrackbar("t1", "Reglages", 180, 255, nothing)
+    cv2.createTrackbar("t2", "Reglages", 110, 255, nothing)
+    cv2.createTrackbar("Threshold", "Reglages", 90, 255, nothing) #Longueur minimale admissible d'un segment
     cv2.createTrackbar("minDist", "Reglages", 90, 255, nothing)
     cv2.createTrackbar("param1", "Reglages", 80, 255, nothing)
-    cv2.createTrackbar("param2", "Reglages", 150, 255, nothing)
-    cv2.createTrackbar("minRadius", "Reglages", 30, 255, nothing)
+    cv2.createTrackbar("param2", "Reglages", 140, 255, nothing)
+    cv2.createTrackbar("minRadius", "Reglages", 50, 255, nothing)
     cv2.createTrackbar("maxRadius", "Reglages", 90, 255, nothing)
     
     while(True):

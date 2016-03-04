@@ -13,7 +13,7 @@ import picamera.array
 serveur = cameraDebugServer.CameraDebugServer()
 
 camera = picamera.PiCamera()
-camera.led = False
+camera.led = False #Eteint la led de la caméra
 camera.resolution = (640, 480)
 camera.framerate = 15
 camera.hflip, camera.vflip = True, True
@@ -24,5 +24,5 @@ while True:
         image = stream.array.tostring()
         serveur.sendData(image)
     
-del serveurDebug
-del camera
+serveur.close()
+camera.close()
