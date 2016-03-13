@@ -71,11 +71,6 @@ def keepVerticalLines(lines):
     return lines
 
 #----------------------------------------------------------------------
-def deleteSameLines(lines):
-    """Supprime les lignes quasi-superposées"""
-    return lines
-    
-#----------------------------------------------------------------------
 def drawMiddleLine(img, lines):
     """Trace la ligne qui doit être suivie par le robot"""
     if lines is not None:
@@ -123,7 +118,7 @@ def main():
     cv2.createTrackbar("param1", "Reglages", 80, 255, nothing)
     cv2.createTrackbar("param2", "Reglages", 140, 255, nothing)
     cv2.createTrackbar("minRadius", "Reglages", 50, 255, nothing)
-    cv2.createTrackbar("maxRadius", "Reglages", 90, 255, nothing)
+    cv2.createTrackbar("maxRadius", "Reglages", 90, 255, nothing)    
     
     while(True):
         length = recvall(sock, 16)
@@ -148,9 +143,8 @@ def main():
             imgGray = cv2.cvtColor(data, cv2.COLOR_BGR2GRAY) #Conversion en niveau de gris
             imgEdges = cv2.Canny(imgGray, t1, t2, apertureSize=3) #Binarisation de l'image
             houghLines = cv2.HoughLines(imgEdges, 3, 5*numpy.pi/180, HoughLinesThreshold) #Transformée de Hough Lines
-            houghLines = deleteSameLines(houghLines)
             imgHoughLines = drawLines(imgHoughLines, houghLines)
-            imgHoughLines = drawMiddleLine(imgHoughLines, houghLines)
+            imgHoughLines = drawMiddleLine(imgHoughLines, houghLines) #Trace la ligne médiane
             
             imgBlurred = cv2.medianBlur(imgGray, 5)
             houghCircles = cv2.HoughCircles(imgBlurred, cv2.HOUGH_GRADIENT, 3, mindist, param1=p1, param2=p2, minRadius=minR, maxRadius=maxR)
