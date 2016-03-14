@@ -2,7 +2,7 @@
 
 class Robot:
 
-	def __init__(self,socket,ip, port,labyrinthe):
+	def __init__(self,socket,ip, port,labyrinthe,controller):
 			self.socket = socket
 			self.ip = ip
 			self.port = port
@@ -12,6 +12,8 @@ class Robot:
 			self.intersection = ("NON","OUI","NON")
 			self.ancienne_position = (0,0)
 			self.labyrinthe = labyrinthe
+			self.controller = controller
+			controller.ajouterRobot(self)
 			
 			
 	#traitement de la chaine de caractère reçue
@@ -34,6 +36,7 @@ class Robot:
 			print(self.intersection)
 			self.bat_level = float(l[6].split(" : ")[1])
 			print(self.bat_level)
+			self.controller.dessinerCheminParcouru(self.ancienne_position,self.position)
 			self.labyrinthe.demandeDirection(self)   #demande de direction au labyrinthe
 			
 	def donnerOrdre(self,ordre):

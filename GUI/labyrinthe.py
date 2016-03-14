@@ -5,7 +5,8 @@ from robot import *
 
 class Labyrinthe:
 
-	def __init__(self):
+	def __init__(self,controller):
+		self.controller = controller
 		self.labyrinthe = nx.Graph()
 		self.labyrinthe.add_node(0, coords = (0,0))
 		self.labyrinthe.add_node(1, coords = (0,0.1))
