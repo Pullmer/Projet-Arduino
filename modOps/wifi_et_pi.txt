@@ -1,0 +1,35 @@
+Une liste de commandes pour configurer et utiliser le WiFi sur Raspbian :
+
+bash:iwconfig
+Retourne des infos de base sur l'interface WiFi (en particulier si la carte est connectée à un réseau)
+
+bash:sudo iwlist wlan0 scan
+Liste les réseau WiFi à portée
+
+bash:sudo iwlist wlan0 scan | grep "ESSID"
+N'affiche que les noms des réseaux WiFi à proximité
+
+
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$
+Utilisation de wpa_cli
+$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+list_networks
+Liste les réseaux connus par le système.
+
+scan
+Scanne pour trouver les réseaux à proximité
+
+scan_results
+Affiche les résultats du scan
+
+add_network
+Ajoute un réseau à la liste des réseaux connus, le numéro retourné est celui associé au réseau créé
+
+set_network 0 ssid "mySSID"
+Spécifie le SSID du réseau 0
+
+set_network 0 psk "myKey"
+Spécifie le mot de passe du réseau 0

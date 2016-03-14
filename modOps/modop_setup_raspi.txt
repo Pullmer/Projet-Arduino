@@ -1,0 +1,33 @@
+$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Installation de raspbian
+$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+1. Télécharger la dernière version de Raspbian sur www.raspberrypi.org/downloads/raspbian/
+
+2. Facultatif : formatter la carte SD (avec SDFormatter par exemple)
+
+3. Charger l'image de Raspbian sur la carte SD (avec Win32 Disk Imager par exemple)
+
+4. Mettre la carte dans la Pi, la connecter à un écran et un clavier (souris facultative) et l'alimenter.
+
+5. Si tout se passe bien, après quelques minutes une interface graphique apparait
+
+6. Aller dans : Menu(touche Windows) -> Preferences -> Raspberry Pi Configuration
+
+7. Dans l'onglet Localisation -> Set Keyboard -> France -> French.
+
+8. Dans l'onglet System, changer Boot : to CLI. Et rebooter la Pi
+
+9. Entrer : 
+
+bash:sudo raspi-config
+
+10. Selectionner Expand Filesystem en appuyant sur Entrée.
+
+11. Rebooter
+
+12. Connecter la Pi à internet. (commande ifconfig pour trouver l'adresse MAC) (
+
+13. Entrer :
+
+bash:sudo apt-get update

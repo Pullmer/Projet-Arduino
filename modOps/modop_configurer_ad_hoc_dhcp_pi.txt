@@ -1,0 +1,126 @@
+$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Ce modop explique comment créer et configurer un réseau ad-hoc avec dhcp et s'y connecter depuis windows
+
+
+1) sur une Pi connectée à internet :
+
+bash:sudo apt-get update
+bash:sudo apt-get install isc-dhcp-server
+
+2) configurer le dhcp :
+
+bash:sudo nano /etc/default/isc-dhcp-server
+
+dans ce fichier, tout commenter sauf la ligne suivante, sur laquelle on ajoute l'interface concernée par le serveur DCHP :
+
+===========================================
+INTERFACES="wlan0"
+===========================================
+
+ensuite :
+
+bash:sudo nano /etc/dhcp/dhcpd.conf
+
+
+tout commenter, et garder en fin de fichier les lignes suivantes :
+
+===========================================
+ddns-update-style none;
+
+log-facility local7; # cette ligne nous permettra de consulter les logs du serveur DHCP
+
+DHCPDARGS=wlan0; 
+default-lease-time 600;
+max-lease-time 7200;
+ 
+option subnet-mask 255.255.255.0; # masque de sous reseau
+option broadcast-address 10.0.0.255;
+option domain-name "RPi-network"; # nom de domaine (?)
+option routers 10.0.0.1; #ip du routeur
+ 
+subnet 10.0.0.0 netmask 255.255.255.0 {
+    range 10.0.0.2 10.0.0.20; #le range d'IPs qui seront assignee automatiquement
+}
+ 
+
+#ajouter ici les noeuds connus pour leur assigner une IP statique.
+
+host myLaptop {
+    hardware ethernet 11:aa:22:bb:33:cc; #adresse MAC du noeud
+    fixed-address 10.0.0.100; #IP a assigner
+}
+===========================================
+
+3) Configurer l'interface reseau de la Pi :
+
+bash:cd /etc/network
+bash:sudo cp interfaces interfaces_backup
+bash:sudo nano interfaces
+
+Le fichier interfaces doit ressembler à ça :
+
+===========================================
+# démarre les interfaces au boot de la Pi
+auto lo wlan0
+
+iface lo inet loopback
+ 
+# autorise l'interface a s'activer lors d'un hotplug
+allow-hotplug eth0
+allow-hotplug wlan0
+
+# configuration ip manuelle
+iface wlan0 inet manual
+===========================================
+
+4) Démarrage du reseau ad-hoc au boot :
+
+bash:sudo nano /etc/rc.local
+
+changer la première ligne en :
+
+#!/bin/bash
+
+et ajouter en fin de fichier (!mais avant le exit 0 !) :
+
+===========================================
+createAdHocNetwork(){
+    echo "Creating ad-hoc network"
+ 
+    iwconfig wlan0 mode ad-hoc
+    iwconfig wlan0 key 45AB69E74A #WEP key
+    iwconfig wlan0 essid RPi      #SSID
+    ifconfig wlan0 10.0.0.200 netmask 255.255.255.0 up
+    /usr/sbin/dhcpd wlan0
+    echo "Ad-hoc network created"
+}
+
+echo "========================"
+echo "Pi network configuration"
+echo "========================"
+createAdHocNetwork
+===========================================
+
+note : ce script peut être modifié pour chercher si un reseau ad-hoc existe déjà et s'y connecter le cas échéant
+
+5) Désactiver le lancement automatique sur DHCP au boot (se dernier ne doit se lancer qu'à l'execution de createAdHocNetwork) :
+
+bash:sudo update-rc.d -f isc-dhcp-server remove
+
+6) configurer les logs du serveur DHCP
+
+bash:sudo nano /etc/rsyslog.conf
+
+ajouter en fin de fichier la ligne suivante
+===========================================
+local7.*/var/log/dhcpd.log
+===========================================
+
+on peut désormais consulter les logs de dhcpd avec par exemple :
+
+bash:tail -f /var/log/dhcpd.log
+
+7) rebooter (debrancher cable ethernet)
+
+bash:sudo reboot
