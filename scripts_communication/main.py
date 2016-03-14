@@ -8,7 +8,6 @@ tcpsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 tcpsock.bind(("",1111))
 
 while True:
-    tcpsock.listen(10)
-    (clientsocket, (ip, port)) = tcpsock.accept()
+    
     newthread = ClientThread(ip, port, clientsocket, labyrinthe)
     newthread.start()
