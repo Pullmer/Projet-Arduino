@@ -9,6 +9,7 @@ TCP_IP = '10.0.0.202'
 TCP_PORT = 1111
 BUFFER_SIZE = 1024
 MESSAGE = "Hello, World!"
+MAX_SPEED = "60"
 
 pressedUp = False
 pressedDown = False
@@ -46,7 +47,7 @@ def commandage():
         s += '-'
 
     if B:
-        s += "70"
+        s += MAX_SPEED
     else:
         s += "0"
 
@@ -56,7 +57,7 @@ def commandage():
         s += '-'
 
     if D:
-        s += "70"
+        s += MAX_SPEED
     else:
         s += "0"
 
