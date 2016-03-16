@@ -36,7 +36,7 @@ class Robot:
 			print(self.intersection)
 			self.bat_level = float(l[6].split(" : ")[1])
 			print(self.bat_level)
-			self.controller.dessinerCheminParcouru(self.ancienne_position,self.position)
+			self.controller.dessinerCheminParcouru(self,self.ancienne_position,self.position)
 			self.labyrinthe.demandeDirection(self)   #demande de direction au labyrinthe
 			
 	def donnerOrdre(self,ordre):
@@ -62,3 +62,6 @@ class Robot:
 		
 	def supprimerDernierePosition(self):
 		self.liste_positions.remove(self.liste_positions[-1])
+		
+	def stop(self):
+		self.donnerOrdre("stop")

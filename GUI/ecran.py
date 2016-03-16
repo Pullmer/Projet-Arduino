@@ -4,6 +4,7 @@ import Tkinter
 from Tkinter import *
 from tkMessageBox import *
 import Queue
+from dessin import *
 
 class Ecran():
 
@@ -24,8 +25,7 @@ class Ecran():
 		self.creerMenu(fenetre)
 		self.afficherInformations(zone2)
 		self.creerBoutons(zone2)
-		self.dessin = Canvas(zone1,width=400,height=400,background='yellow')
-		self.point1 = self.dessin.create_oval(192,392,208,408,fill='red')
+		self.dessin = Dessin(zone1,400,400,'yellow')
 		self.dessin.pack()
 	
 	def dessinerLigne(self,coord1,coord2):
@@ -71,10 +71,13 @@ class Ecran():
 			showinfo('information','lancement du serveur')
 			self.controller.lancerServeur()
 			
+		def pause():
+			self.controller.pause()
+			
 		bouton_start=Button(frame, text="Lancer", command=lancer)
 		bouton_start.pack(side=BOTTOM, padx=10, pady=10)
 		
-		bouton_pause=Button(frame, text="Pause", command=self.fenetre.quit)
+		bouton_pause=Button(frame, text="Pause", command=pause)
 		bouton_pause.pack(side=BOTTOM, padx=10, pady=10)
 	def rafraichirEcran(self):
 		while self.queue.qsize():
@@ -82,6 +85,7 @@ class Ecran():
 					msg = self.queue.get(0)
 					# on regarde la modification à faire
 					if msg == "chemin":
+						id = self.queue.get(0)
 						ancienne = self.queue.get(0)
 						nouvelle = self.queue.get(0)
 						
@@ -89,8 +93,8 @@ class Ecran():
 						Y1 = int(-30*ancienne[1]+400)
 						X2 = int(30*nouvelle[0]+200)
 						Y2 = int(-30*nouvelle[1]+400)
-						self.dessin.create_line(X1, Y1, X2, Y2,width=4)
-						self.dessin.coords(self.point1,X2-8,Y2-8,X2+8,Y2+8)
+						self.dessin.creerLigne((X1,Y1),(X2,Y2),4)
+						self.dessin.deplacerPoint(id,(X2,Y2))
 						
 					if msg == "details":
 						id = self.queue.get(0)
@@ -104,6 +108,7 @@ class Ecran():
 							showinfo('details du robot '+str(id),text)
 							
 					if msg == "nouveau robot":
+						self.dessin.creerPoint()
 						showinfo('connexion','Un robot vient de se connecter')
 				except Queue.Empty:
 					pass	

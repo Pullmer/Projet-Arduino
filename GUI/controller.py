@@ -20,8 +20,12 @@ class Controller:
 		self.ecran.rafraichirEcran()
 		self.fenetre.after(50,self.periodicCall)
 
-	def dessinerCheminParcouru(self,ancienne_position,nouvelle_position):
+	def dessinerCheminParcouru(self,robot,ancienne_position,nouvelle_position):
+		id = 0
+		while self.robots[id] != robot:
+			id = id+1
 		self.queue.put("chemin")
+		self.queue.put(id)
 		self.queue.put(ancienne_position)
 		self.queue.put(nouvelle_position)
 		
@@ -46,3 +50,7 @@ class Controller:
 		
 	def lancerServeur(self):
 		self.serveur.start()
+		
+	def pause(self):
+		for robot in self.robots:
+			robot.stop()
