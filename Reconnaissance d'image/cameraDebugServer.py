@@ -10,7 +10,7 @@ import socket
 
 ########################################################################
 class CameraDebugServer:
-    """"""
+    """Classe permettant l'envoi d'un flux vidéo sur le réseau"""
 
     #----------------------------------------------------------------------
     def __init__(self, port = 8123):

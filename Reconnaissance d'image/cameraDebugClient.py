@@ -12,7 +12,7 @@ import cv2
 
 #----------------------------------------------------------------------
 def recvall(sock, count):
-    """Receive data"""
+    """Receive data via network"""
     buf = b''
     while count:
         newbuf = sock.recv(count)
@@ -24,22 +24,21 @@ def recvall(sock, count):
 
 #----------------------------------------------------------------------
 
-resolution = (640, 480)
-TCP_IP = '10.12.152.110' # Adresse du serveur
+resolution = (1296, 730)
+TCP_IP = '10.12.152.157' # Adresse du serveur
 TCP_PORT = 8123
 
 sock = socket.socket()
-sock.connect((TCP_IP, TCP_PORT))
+sock.connect((TCP_IP, TCP_PORT)) # ─Ouverture du socket
 cv2.namedWindow('Client')
 
 while(True):
-
     length = recvall(sock, 16)
     
     if(length):
         stringData = recvall(sock, int(length))
         data = numpy.fromstring(stringData, dtype='uint8').reshape(resolution[1], resolution[0], -1)
-        cv2.imshow('Client', data)           
+        cv2.imshow('Client', data) # Affichage de l'image via OpenCV   
 
     if(cv2.waitKey(1) & 0xFF == ord('q')):
         break
