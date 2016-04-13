@@ -27,7 +27,7 @@ class SerialArduino:
         while("pong" not in self.Read()): # Attente d'une réponse de l'aduino
                 self.Send("#ping;")
                 print("Ping sent...")
-                time.sleep(0.05)
+                time.sleep(0.5)
                 
         print("Received pong")
         

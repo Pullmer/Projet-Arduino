@@ -34,7 +34,7 @@ class CameraDebugServer:
             CameraDebugServer.__init__(self)
 
     #----------------------------------------------------------------------
-    def __del__(self):
+    def close(self):
         """Lorsque la classe se ferme on close le socket"""
         try:
             self.s.close()

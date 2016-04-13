@@ -45,7 +45,7 @@ def main():
     cv2.resizeWindow('Reglages', 400, 400)
     cv2.createTrackbar("t1", "Reglages", 70, 255, nothing) # Seuil houghlines t1
     cv2.createTrackbar("t2", "Reglages", 70, 255, nothing) # Seuil houghlines t2
-    cv2.createTrackbar("Threshold", "Reglages", 250, 500, nothing) # Longueur minimale admissible d'un segment
+    cv2.createTrackbar("Threshold", "Reglages", 330, 500, nothing) # Longueur minimale admissible d'un segment
     cv2.createTrackbar("minDist", "Reglages", 90, 255, nothing) # distance minimale entre chaque cercles de houghcircles
     cv2.createTrackbar("param1", "Reglages", 40, 255, nothing)
     cv2.createTrackbar("param2", "Reglages", 40, 255, nothing)
@@ -76,7 +76,7 @@ def main():
             # Reconnaissance lignes
             imgGray = cv2.cvtColor(data, cv2.COLOR_BGR2GRAY) # Conversion en niveau de gris
             imgEdges = cv2.Canny(imgGray, t1, t2, apertureSize=3) # Binarisation de l'image
-            houghLines = cv2.HoughLines(imgEdges, 5, 5*numpy.pi/180, HoughLinesThreshold) # Transformée de Hough Lines
+            houghLines = cv2.HoughLines(imgEdges, 3, 5*numpy.pi/180, HoughLinesThreshold) # Transformée de Hough Lines
             imgHoughLines = libRI.drawLines(imgHoughLines, libRI.keepHorizontalLines(houghLines)) # Tracée lignes horizontales
             imgHoughLines = libRI.drawLines(imgHoughLines, libRI.keepVerticalLines(houghLines), color=(0,255,0)) # Tracée lignes verticales
             middleLine = libRI.getMiddleLine(houghLines) # Acquisition ligne de la route

@@ -26,6 +26,6 @@ try:
             image = stream.array.tostring()
             serveur.sendData(image) # Envoi de l'image sur le réseau
 finally:
-    del serveur
+    serveur.close()
     camera.close()
     print("Camera closed")

@@ -16,9 +16,11 @@ def main():
     """Fonction main"""
     
     while(True):
-        arduino.Send("#hello;")
+        arduino.Send("#bat_level;")
         time.sleep(2)
-        print(arduino.Read())
+        a = arduino.Read()
+        if len(a) > 0:
+            print(a)
         
     
 #----------------------------------------------------------------------
