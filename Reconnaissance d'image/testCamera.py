@@ -14,7 +14,7 @@ serveur = cameraDebugServer.CameraDebugServer() # Démarrage du serveur de strea
 
 camera = picamera.PiCamera() # Démarrage caméra
 camera.led = False # Eteint la led de la caméra
-camera.resolution = (1296, 730) # Résolution
+camera.resolution = (640, 480) # Résolution
 camera.framerate = 3
 camera.video_stabilization = True # Default : false
 camera.hflip, camera.vflip = True, True

@@ -8,7 +8,7 @@
 
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 
-boolean obstacle_detected = false;
+boolean blocked = false;
 
 boolean obstacle()
 {
@@ -18,17 +18,17 @@ boolean obstacle()
 
 void alerte()
 {
-   if(obstacle() && !obstacle_detected) // obstacle détecté
+   if(obstacle() && !blocked) // obstacle détecté
    {
     Serial.println("obstacle !");
-    obstacle_detected = true;
+    blocked = true;
     set_vitesse_mot(0); // stop moteurs
    }
-   else if(!obstacle() && obstacle_detected) // il n'y a plus d'obstacle
+   else if(!obstacle() && blocked) // il n'y a plus d'obstacle
    {
     run_previous_state_mot();
-    obstacle_detected = false;
-    Serial.println("obstacle ok");
+    blocked = false;
+    Serial.println("obstacle ok, redemarrage moteur");
    }
 }
 

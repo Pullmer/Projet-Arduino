@@ -38,7 +38,7 @@ def keepVerticalLines(lines):
         index = list()
         i = 0
         for rho, theta in lines[0]:
-            if not (theta > numpy.pi/180*130 or theta < numpy.pi/180*40):
+            if not (numpy.pi/180*105 < theta  or theta < numpy.pi/180*75):
                 index.append(i)
             i += 1
         
@@ -52,24 +52,24 @@ def keepVerticalLines(lines):
         return lines
 
 #----------------------------------------------------------------------
-#def keepHorizontalLines(lines):
-    #"""Garde uniquement les lignes horizontales"""
-    #if lines is not None:
-        #horizontalLines = lines.copy()
-        #index = list()
-        #for i in range(len(lines)):
-            #for rho, theta in lines[i]:
-                #if (theta > numpy.pi/180*130 or theta < numpy.pi/180*40):
-                    #index.append(i)
+def keepHorizontalLines(lines):
+    """Garde uniquement les lignes horizontales"""
+    if lines is not None:
+        index = list()
+        i = 0
+        for rho, theta in lines[0]:
+            if (numpy.pi/180*105 < theta  or theta < numpy.pi/180*75):
+                index.append(i)
+            i += 1
+        
+        # Suppression des lignes verticales
+        mask = numpy.ones(len(lines[0]), dtype=bool)
+        mask[index] = False
+        
+        return numpy.array([lines[0][mask]])
     
-        ## Suppression des lignes verticales
-        #for i in sorted(index, reverse=True):
-            #horizontalLines = numpy.delete(horizontalLines, i, 0)
-     
-        #return horizontalLines
-    
-    #else:
-        #return lines
+    else:
+        return lines
 
 #----------------------------------------------------------------------
 def drawLines(img, lines, color=(0, 0, 255), thickness=2):
@@ -97,7 +97,7 @@ def getMiddleLine(lines):
         # On supprime les lignes horizontales
         verticalLines = keepVerticalLines(lines)
         
-        if len(verticalLines[0]) >= 2: # L'algorithme de HoughLines trie les lignes par ordre de probabilité, on sélectionne donc les 2 premières
+        if len(verticalLines) >= 2: # L'algorithme de HoughLines trie les lignes par ordre de probabilité, on sélectionne donc les 2 premières
             (x1a, y1a), (x2a, y2a) = rhothetaToXY(verticalLines.item(0), verticalLines.item(1))
             (x1b, y1b), (x2b, y2b) = rhothetaToXY(verticalLines.item(2), verticalLines.item(3))    
             x1 = (x1a + x1b)/2

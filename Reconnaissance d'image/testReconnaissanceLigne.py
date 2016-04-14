@@ -11,7 +11,7 @@ import numpy
 import cv2
 import libReconnaissanceImage as libRI
 
-resolution = (1296, 730) # Résolution caméra
+resolution = (640, 480) # Résolution caméra
 TCP_IP = '10.12.152.157' # Adresse du serveur
 TCP_PORT = 8123 # Port de communication
 
@@ -77,7 +77,7 @@ def main():
             imgGray = cv2.cvtColor(data, cv2.COLOR_BGR2GRAY) # Conversion en niveau de gris
             imgEdges = cv2.Canny(imgGray, t1, t2, apertureSize=3) # Binarisation de l'image
             houghLines = cv2.HoughLines(imgEdges, 3, 5*numpy.pi/180, HoughLinesThreshold) # Transformée de Hough Lines
-            imgHoughLines = libRI.drawLines(imgHoughLines, libRI.keepHorizontalLines(houghLines)) # Tracée lignes horizontales
+            #imgHoughLines = libRI.drawLines(imgHoughLines, libRI.keepHorizontalLines(houghLines)) # Tracée lignes horizontales
             imgHoughLines = libRI.drawLines(imgHoughLines, libRI.keepVerticalLines(houghLines), color=(0,255,0)) # Tracée lignes verticales
             middleLine = libRI.getMiddleLine(houghLines) # Acquisition ligne de la route
             if middleLine is not None:

@@ -3,5 +3,6 @@
 #include "Arduino.h"
 
 float bat_level();
+void alerteBatterie();
 
 #endif

@@ -3,28 +3,26 @@
 int vitesse_mot[] = {0, 0};
 int previous_vitesse_mot[] = {0, 0};
 
-float consigne_angle = 50; // initialisation PID
 float erreur = 0;
 float erreur_precedente = 0;
 float somme_erreur = 0;
-float kp = 15;
-float kd = 20;
-float ki = 0.007;
+float kp = 2;
+float kd = 0.0;
+float ki = 0.0;
 float output_pid = 0;
 
 ZumoMotors motors;
 
 void pid()
-{  
-  erreur = relativeHeading(consigne_angle, averageHeading()); // compris entre -180 et 180
+{
   somme_erreur += erreur;
   erreur_precedente = erreur;
   
   output_pid = kp*erreur + ki*somme_erreur + kd*(erreur - erreur_precedente);
-  if(output_pid < -370) output_pid = -370;
-  else if(output_pid > 370) output_pid = 370;
+  if(output_pid < -100) output_pid = -100;
+  else if(output_pid > 100) output_pid = 100;
   
-  if(vitesse_mot[0] == 0) set_vitesse_mot(-output_pid, output_pid);
+  if(vitesse_mot[0] == 0 && vitesse_mot[1] == 0) motors.setSpeeds(output_pid, -output_pid); // robot à l'arrêt
 }
 
 void set_kp(float k)
@@ -44,10 +42,10 @@ void set_kd(float k)
 
 void set_vitesse_mot(int leftspeed, int rightspeed)
 {
-  if(rightspeed > 400) rightspeed = 400;
-  if(leftspeed > 400) leftspeed = 400;
-  if(rightspeed < -400) rightspeed = -400;
-  if(leftspeed < -400) leftspeed = -400;
+  if(rightspeed > 120) rightspeed = 120;
+  if(leftspeed > 120) leftspeed = 120;
+  if(rightspeed < -120) rightspeed = -120;
+  if(leftspeed < -120) leftspeed = -120;
   
   previous_vitesse_mot[0] = vitesse_mot[0];
   previous_vitesse_mot[1] = vitesse_mot[1];
@@ -64,8 +62,8 @@ void set_vitesse_mot(int x)
 
 void refresh_moteurs()
 {
-  motors.flipLeftMotor(false); // "true" pour le robot rapide uniquement
   motors.setSpeeds(vitesse_mot[0], vitesse_mot[1]);
+  motors.flipLeftMotor(true); // "true" pour le robot rapide uniquement
 }
 
 void run_previous_state_mot()
@@ -75,12 +73,7 @@ void run_previous_state_mot()
   refresh_moteurs();
 }
 
-void setHeading_relatif(float target_heading)
+void refreshAngularError(float e)
 {
-  setHeading_boussole(averageHeading() + target_heading);
-}
-
-void setHeading_boussole(float target_heading)
-{
-  consigne_angle = target_heading;
+  erreur = e;
 }

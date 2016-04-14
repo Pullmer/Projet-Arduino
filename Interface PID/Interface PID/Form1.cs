@@ -18,7 +18,7 @@ namespace Interface_PID
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            serialPort1.PortName = "COM22";
+            serialPort1.PortName = "COM4";
             serialPort1.BaudRate = 115200;
 
             serialPort1.Open();
@@ -46,7 +46,7 @@ namespace Interface_PID
 
         private void numericUpDown_angle_ValueChanged(object sender, EventArgs e)
         {
-            if (serialPort1.IsOpen) serialPort1.WriteLine("#set_angle_boussole;" + numericUpDown_angle.Value.ToString() + ";");
+            if (serialPort1.IsOpen) serialPort1.WriteLine("#deviation;" + numericUpDown_angle.Value.ToString() + ";");
         }
 
         private void numericUpDown_kp_ValueChanged(object sender, EventArgs e)

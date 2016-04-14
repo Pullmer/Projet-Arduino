@@ -12,3 +12,4 @@ C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\bin\R
 C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\obj\x86\Release\Interface_PID.Form1.resources
 C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\obj\x86\Release\Interface_PID.Properties.Resources.resources
 C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\obj\x86\Release\Interface PID.csproj.GenerateResource.Cache
+C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\obj\x86\Release\Interface PID.csprojResolveAssemblyReference.cache
