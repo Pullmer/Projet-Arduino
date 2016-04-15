@@ -9,6 +9,40 @@ from dessin import *
 class Ecran():
 
 	def __init__(self, controller,fenetre,queue):
+	
+		def clavier(event):
+			touche = event.keysym
+			if self.dessin.curseurUtilise():
+				position_curseur = self.dessin.getPositionCurseur()
+				carrefours_adjacents = self.controller.getAdjacents(position_curseur)
+				if touche == "Up":
+					for position in carrefours_adjacents:
+						dx = position[0]-position_curseur[0]
+						dy = position[1]-position_curseur[1]
+						if dx == 0 and dy >0:
+							self.dessin.deplacerCurseur(position)
+							break
+				elif touche == "Down":
+					for position in carrefours_adjacents:
+						dx = position[0]-position_curseur[0]
+						dy = position[1]-position_curseur[1]
+						if dx == 0 and dy <0:
+							self.dessin.deplacerCurseur(position)
+							break
+				elif touche == "Right":
+					for position in carrefours_adjacents:
+						dx = position[0]-position_curseur[0]
+						dy = position[1]-position_curseur[1]
+						if dx > 0 and dy == 0:
+							self.dessin.deplacerCurseur(position)
+							break
+				elif touche == "Left":
+					for position in carrefours_adjacents:
+						dx = position[0]-position_curseur[0]
+						dy = position[1]-position_curseur[1]
+						if dx < 0 and dy == 0:
+							self.dessin.deplacerCurseur(position)
+							break
 		self.controller = controller
 		self.fenetre = fenetre
 		self.queue = queue
@@ -26,6 +60,8 @@ class Ecran():
 		self.afficherInformations(zone2)
 		self.creerBoutons(zone2)
 		self.dessin = Dessin(zone1,400,400,'yellow')
+		self.dessin.focus_set()
+		self.dessin.bind("<Key>", clavier)
 		self.dessin.pack()
 	
 	def dessinerLigne(self,coord1,coord2):
@@ -39,11 +75,24 @@ class Ecran():
 		def alert():
 			self.fenetre.quit()
 			
+		def curseur():
+			if(self.dessin.curseurUtilise()):
+				self.dessin.effacerCurseur()
+			else:
+				self.dessin.afficherCurseur()
+			
+		def changer_mode():
+			if askyesno('changement de mode','Voulez vous passer en mode exploration?'):
+				print('oui')
+			else:
+				print('non')
+		
 		menubar = Menu(fenetre)
 		
 		menu1 = Menu(menubar, tearoff=0)
 		menu1.add_command(label="Commencer", command=alert)
-		menu1.add_command(label="Mode", command=alert)
+		menu1.add_command(label="Mode", command=changer_mode)
+		menu1.add_command(label="Curseur", command=curseur)
 		menu1.add_separator()
 		menu1.add_command(label="Quitter", command=fenetre.quit)
 		menubar.add_cascade(label="Fichier", menu=menu1)
@@ -112,3 +161,4 @@ class Ecran():
 						showinfo('connexion','Un robot vient de se connecter')
 				except Queue.Empty:
 					pass	
+					

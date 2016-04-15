@@ -6,17 +6,14 @@ from robot import *
 class Labyrinthe:
 
 	def __init__(self,controller):
-		self.controller = controller
-		self.labyrinthe = nx.Graph()
-		self.labyrinthe.add_node(0, coords = (0,0))
+		self.controller = controller   #référence vers le controller
+		self.labyrinthe = nx.Graph()   #graphe de représentation du labyrinthe
+		self.labyrinthe.add_node(0, coords = (0,0))   #ajout du point de départ du labyrinthe
 		self.labyrinthe.add_node(1, coords = (0,0.1))
+		self.prochain = 2             #identifiant du prochain noeud à construire
 		self.ajouterChemin(0,1,0)
 		
-	#def add_node(self, coordonnees, ancien_noeud):
-		#nombre_noeuds = self.labyrinthe.number_of_nodes()
-		#self.labyrinthe.add_node(nombre_noeuds, coords = coordonnees)
-		#self.labyrinthe.add_edge(ancien_noeud, nombre_noeuds)
-	
+	#retourne la liste des noeuds du labyrinthe
 	def getNodes(self):
 		return self.labyrinthe.nodes()
 		
@@ -31,16 +28,21 @@ class Labyrinthe:
 	#ajout d'un noeud dans un graphe
 	def ajouterNoeud(self, coordonees):
 		nombre_noeuds = self.labyrinthe.number_of_nodes()
-		self.labyrinthe.add_node(nombre_noeuds, coords = coordonnees)
+		self.labyrinthe.add_node(self.prochain, coords = coordonnees)
+		self.prochain += 1
 		
 	#executé quand un robot demande sa direction
 	def demandeDirection(self, robot):
+		#on récupère l'ancienne et la nouvelle position du robot
 		coord1 = robot.getAnciennePosition()
 		coord2 = robot.getPosition()
+		#on récupère les noeuds correspondants aux coordonnées récupérées
 		nouvelle_position = self.rechercheNoeud(coord2)
 		ancienne_position = self.rechercheNoeud(coord1)
 		
+		#si le carrefour est inconnu
 		if nouvelle_position == -1:
+			#on recherche le noeud à modifier parmi les ajacents à l'ancienne position
 			adjacents = self.labyrinthe.neighbors(ancienne_position)
 			Dx = coord2[0]-coord1[0]
 			Dy = coord2[1]-coord1[1]
@@ -51,17 +53,19 @@ class Labyrinthe:
 				if (Dx==0 and dx==0 and Dy*dy>0) or (Dy==0 and dy==0 and Dx*dx>0):
 					nouvelle_position = noeud
 			
-			self.labyrinthe.node[nouvelle_position]['coords'] = coord2
+			self.labyrinthe.node[nouvelle_position]['coords'] = coord2   #on modifie les coordonnées du noeud
 			distance_parcourue = self.calculDistance(coord1,coord2)
-			self.labyrinthe.edge[ancienne_position][nouvelle_position]['weight'] = distance_parcourue
+			self.labyrinthe.edge[ancienne_position][nouvelle_position]['weight'] = distance_parcourue    #mise à jour distance du chemin parcouru
 			print("modification noeud ",nouvelle_position," en :",coord2)
-			intersection = robot.getIntersection()
-			self.construireIntersection(intersection, coord1, coord2,nouvelle_position)
+			intersection = robot.getIntersection()   #on récupère la forme de l'intersection découverte
+			self.construireIntersection(intersection, coord1, coord2,nouvelle_position)   #on demande la construction de cette intersection dans le graphe
 			
+		#si le chemin parcouru est inconnu, mais pas le carrefour
 		elif self.estConnu(ancienne_position, nouvelle_position) == False:		
 			distance_parcourue = self.calculDistance(coord1,coord2)
-			self.labyrinthe.edge[ancienne_position][nouvelle_position]['weight'] = distance_parcourue
+			self.labyrinthe.edge[ancienne_position][nouvelle_position]['weight'] = distance_parcourue   #mise à jour distance du chemin parcouru
 			
+			#on supprime les noeuds intermédiaires mais en fait inutiles construits précédemment
 			adjacents = self.labyrinthe.neighbors(ancienne_position)
 			Dx = coord2[0]-coord1[0]
 			Dy = coord2[1]-coord1[1]
@@ -72,8 +76,7 @@ class Labyrinthe:
 				if (Dx==0 and dx==0 and Dy*dy>0) or (Dy==0 and dy==0 and Dx*dx>0):
 					if noeud != nouvelle_position:
 						self.labyrinthe.remove_node(noeud)
-						print("suppression noeud",noeud)
-					
+						print("suppression noeud",noeud)		
 			adjacents = self.labyrinthe.neighbors(nouvelle_position)
 			Dx = coord2[0]-coord1[0]
 			Dy = coord2[1]-coord1[1]
@@ -85,19 +88,19 @@ class Labyrinthe:
 					if noeud != ancienne_position:	
 						self.labyrinthe.remove_node(noeud)
 						print("suppression noeud",noeud)
-			
+		
+		#si chemin déjà parcouru par un autre robot
 		else:
 			print("chemin deja parcouru")
 		
-		direction = self.nouvelleDirection(robot,ancienne_position, nouvelle_position)
+		direction = self.nouvelleDirection(robot,ancienne_position, nouvelle_position)   #on demande la direction à suivre
 		print(self.getNodes())
 		print(self.labyrinthe.edges())
-		robot.donnerOrdre(direction)
+		robot.donnerOrdre(direction)    #on demande l'envoi de l'ordre de direction
 		
 	#fonction qui retourne l'identifiant d'un noeud de coordonnées spécifiées
 	def rechercheNoeud(self, coordonnees):
 		noeuds = self.labyrinthe.nodes()
-		taille = len(noeuds)
 		for n in noeuds:
 			if self.labyrinthe.node[n]['coords'] == coordonnees:
 				return n
@@ -112,6 +115,7 @@ class Labyrinthe:
 		except KeyError:
 			self.labyrinthe.add_edge(noeud_depart,noeud_arrivee,weight=0)
 			return False
+	
 	#construit les nouveaux chemins autour du nouveau carrefour découvert
 	def construireIntersection(self, intersection, coord1, coord2, nouvelle_position):
 		droite = (intersection[0].split(";")[0])
@@ -121,43 +125,48 @@ class Labyrinthe:
 		deplacementY = coord2[1] - coord2[0]
 		if droite == "OUI":
 			if deplacementX ==0:
-				coord = (coord2[0]+0.1*deplacementY/abs(deplacementY),coord2[1])
-				nombre_noeuds = self.labyrinthe.number_of_nodes()
-				self.labyrinthe.add_node(nombre_noeuds, coords = coord)
-				print("creation noeud ",nombre_noeuds," en :",coord)
-				self.ajouterChemin(nouvelle_position,nombre_noeuds,0)
+				coord = (coord2[0]+0.1*deplacementY/abs(deplacementY),coord2[1])   #coordonnée provisoire du carrefour de droite
+				nouveau_noeud = self.prochain
+				self.labyrinthe.add_node(nouveau_noeud, coords = coord)             #noeud de droite
+				self.prochain += 1
+				print("creation noeud ",nouveau_noeud," en :",coord)
+				self.ajouterChemin(nouvelle_position,nouveau_noeud,0)				#création du chemin entre les deux noeuds
 			else:
-				coord = (coord2[0],coord2[1]-0.1*deplacementX/abs(deplacementX))
-				nombre_noeuds = self.labyrinthe.number_of_nodes()
-				self.labyrinthe.add_node(nombre_noeuds, coords = coord)
-				print("creation noeud ",nombre_noeuds," en :",coord)
-				self.ajouterChemin(nouvelle_position,nombre_noeuds,0)
+				coord = (coord2[0],coord2[1]-0.1*deplacementX/abs(deplacementX))    #coordonnée provisoire du carrefour de droite
+				nouveau_noeud = self.prochain
+				self.labyrinthe.add_node(nouveau_noeud, coords = coord)              #noeud de droite
+				print("creation noeud ",nouveau_noeud," en :",coord)
+				self.ajouterChemin(nouvelle_position,nouveau_noeud,0)                #création du chemin entre les deux noeuds
 		if gauche == "OUI":
 			if deplacementX ==0:
-				coord = (coord2[0]-0.1*deplacementY/abs(deplacementY),coord2[1])
-				nombre_noeuds = self.labyrinthe.number_of_nodes()
-				self.labyrinthe.add_node(nombre_noeuds, coords = coord)
-				print("creation noeud ",nombre_noeuds," en :",coord)
-				self.ajouterChemin(nouvelle_position,nombre_noeuds,0)
+				coord = (coord2[0]-0.1*deplacementY/abs(deplacementY),coord2[1])     #coordonnée provisoire du carrefour de gauche
+				nouveau_noeud = self.prochain
+				self.labyrinthe.add_node(nouveau_noeud, coords = coord)              #noeud de gauche
+				self.prochain += 1
+				print("creation noeud ",nouveau_noeud," en :",coord)
+				self.ajouterChemin(nouvelle_position,nouveau_noeud,0)                 #création du chemin entre les deux noeuds
 			else:
-				coord = (coord2[0],coord2[1]+0.1*deplacementX/abs(deplacementX))
-				nombre_noeuds = self.labyrinthe.number_of_nodes()
-				self.labyrinthe.add_node(nombre_noeuds, coords = coord)
-				print("creation noeud ",nombre_noeuds," en :",coord)
-				self.ajouterChemin(nouvelle_position,nombre_noeuds,0)
+				coord = (coord2[0],coord2[1]+0.1*deplacementX/abs(deplacementX))      #coordonnée provisoire du carrefour de gauche
+				nouveau_noeud = self.prochain
+				self.labyrinthe.add_node(nouveau_noeud, coords = coord)               #noeud de gauche
+				self.prochain += 1
+				print("creation noeud ",nouveau_noeud," en :",coord)
+				self.ajouterChemin(nouvelle_position,nouveau_noeud,0)                 #création du chemin entre les deux noeuds
 		if face == "OUI":
 			if deplacementX ==0:
-				coord = (coord2[0],coord2[1]+0.1*deplacementY/abs(deplacementY))
-				nombre_noeuds = self.labyrinthe.number_of_nodes()
-				self.labyrinthe.add_node(nombre_noeuds, coords = coord)
-				print("creation noeud ",nombre_noeuds," en :",coord)
-				self.ajouterChemin(nouvelle_position,nombre_noeuds,0)
+				coord = (coord2[0],coord2[1]+0.1*deplacementY/abs(deplacementY))      #coordonnée provisoire du carrefour d'en face
+				nouveau_noeud = self.prochain
+				self.labyrinthe.add_node(nouveau_noeud, coords = coord)               #noeud d'en face
+				self.prochain += 1
+				print("creation noeud ",nouveau_noeud," en :",coord)
+				self.ajouterChemin(nouvelle_position,nouveau_noeud,0)                 #création du chemin entre les deux noeuds
 			else:
-				coord = (coord2[0]+0.1*deplacementX/abs(deplacementX),coord2[1])
-				nombre_noeuds = self.labyrinthe.number_of_nodes()
-				self.labyrinthe.add_node(nombre_noeuds, coords = coord)
-				print("creation noeud ",nombre_noeuds," en :",coord)
-				self.ajouterChemin(nouvelle_position,nombre_noeuds,0)
+				coord = (coord2[0]+0.1*deplacementX/abs(deplacementX),coord2[1])       #coordonnée provisoire du carrefour d'en face
+				nouveau_noeud = self.prochain
+				self.labyrinthe.add_node(nouveau_noeud, coords = coord)                #noeud d'en face
+				self.prochain += 1
+				print("creation noeud ",nouveau_noeud," en :",coord)
+				self.ajouterChemin(nouvelle_position,nouveau_noeud,0)                 #création du chemin entre les deux noeuds
 				
 	def nouvelleDirection(self,robot,ancienne_position,nouvelle_position):
 		coord1 = self.labyrinthe.node[ancienne_position]['coords']
@@ -167,14 +176,19 @@ class Labyrinthe:
 		adjacents = self.labyrinthe.neighbors(nouvelle_position)
 		objectif = -1
 		i =0
+		#on cherche un chemin non exploré
 		while i < len(adjacents) and objectif == -1:
 			if self.labyrinthe.edge[nouvelle_position][adjacents[i]]['weight'] == 0:
 				objectif = adjacents[i]
 				position_objectif = self.labyrinthe.node[objectif]['coords']
 			i=i+1
+		
+		# si pas de possibilité, on revient au carrefour précédent
 		if objectif ==-1:
 			robot.supprimerDernierePosition()
 			position_objectif = robot.dernierePositionConnue()
+		
+		# on retourne l'ordre de direction correpondant au noeud à aller découvrir
 		dx = position_objectif[0]-coord2[0]
 		dy = position_objectif[1]-coord2[1]
 		if Dx==0 and dx==0:
@@ -197,4 +211,17 @@ class Labyrinthe:
 				return "gauche"
 			else:
 				return "droite"
-	#def disjktra(self, depart, arrivee):
+	
+	# méthode qui renvoie la liste des noeuds pour relier de manière optimale deux points du labyrinthe
+	def disjktra(self, depart, arrivee):
+		nx.dijkstra_path(self.labyrinthe, depart, arrivee)   #algorithme de Dijkstra
+		
+	# méthode qui retourne une liste de coordonnées des carrefours ajacents à un de coordonnées spécifiées
+	def getNoeudsAdjacents(self,coords):
+		noeud = self.rechercheNoeud(coords)
+		liste = []
+		if noeud != -1:
+			adjacents = self.labyrinthe.neighbors(noeud)
+			for i in adjacents:
+				liste.append(self.labyrinthe.node[i]['coords'])
+		return liste

@@ -54,3 +54,6 @@ class Controller:
 	def pause(self):
 		for robot in self.robots:
 			robot.stop()
+			
+	def getAdjacents(self,coords):
+		return self.labyrinthe.getNoeudsAdjacents(coords)
