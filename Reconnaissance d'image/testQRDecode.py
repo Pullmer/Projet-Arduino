@@ -10,7 +10,7 @@ import picamera
 import qrCodeDecoder
 
 camera = picamera.PiCamera()
-camera.resolution = (1296, 730)
+camera.resolution = (1920, 1080)
 camera.hflip, camera.vflip = True, True
 
 camera.color_effects = (128,128) # noir et blanc

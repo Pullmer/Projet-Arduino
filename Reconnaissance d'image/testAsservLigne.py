@@ -31,7 +31,6 @@ def main():
         while True:
             debut = time.time()
             camera.capture(stream, format='bgr')
-            #print("Temps capture image : " + str(time.time() - debut))
             stream.truncate(0)
             data = stream.array # Image capturée
             imgHoughLines = data.copy() # Création d'une copie de l'image
@@ -39,7 +38,7 @@ def main():
             # Reconnaissance lignes
             imgGray = cv2.cvtColor(data, cv2.COLOR_BGR2GRAY) # Conversion en niveau de gris
             imgEdges = cv2.Canny(imgGray, 70, 70, apertureSize=3) # Binarisation de l'image
-            houghLines = cv2.HoughLines(imgEdges, 3, 5*numpy.pi/180, 230) # Transformée de Hough Lines
+            houghLines = cv2.HoughLines(imgEdges, 3, 3*numpy.pi/180, 100) # Transformée de Hough Lines
                 
             middleLine = libRI.getMiddleLine(houghLines) # Acquisition ligne de la route
             if middleLine is not None:
@@ -49,7 +48,6 @@ def main():
             a = arduino.Read()
             if len(a) > 0:
                 print(a)
-            #print("Temps traitement + capture image : " + str(time.time() - debut))
             
     finally:
         camera.close()

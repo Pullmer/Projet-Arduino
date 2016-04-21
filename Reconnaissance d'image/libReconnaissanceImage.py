@@ -33,43 +33,75 @@ def lineToAngle(((x1, y1), (x2, y2))):
 
 #----------------------------------------------------------------------
 def keepVerticalLines(lines):
-    """Garde uniquement les lignes verticales"""
+    """Garde uniquement les lignes verticales (version opencv windows)"""
     if lines is not None:
         index = list()
-        i = 0
-        for rho, theta in lines[0]:
-            if not (numpy.pi/180*105 < theta  or theta < numpy.pi/180*75):
-                index.append(i)
-            i += 1
-        
-        # Suppression des lignes horizontales
-        mask = numpy.ones(len(lines[0]), dtype=bool)
-        mask[index] = False
-        
-        return numpy.array([lines[0][mask]])
+        for i in range(len(lines)):
+            for rho, theta in lines[i]:
+                if not (theta > numpy.pi/180*105 or theta < numpy.pi/180*75):
+                    index.append(i)
     
-    else:
-        return lines
+        #Suppression des lignes horizontales
+        for i in sorted(index, reverse=True):
+            lines = numpy.delete(lines, i, 0)
+     
+    return lines
 
 #----------------------------------------------------------------------
 def keepHorizontalLines(lines):
-    """Garde uniquement les lignes horizontales"""
+    """Garde uniquement les lignes horizontales (version opencv windows)"""
     if lines is not None:
         index = list()
-        i = 0
-        for rho, theta in lines[0]:
-            if (numpy.pi/180*105 < theta  or theta < numpy.pi/180*75):
-                index.append(i)
-            i += 1
-        
-        # Suppression des lignes verticales
-        mask = numpy.ones(len(lines[0]), dtype=bool)
-        mask[index] = False
-        
-        return numpy.array([lines[0][mask]])
+        for i in range(len(lines)):
+            for rho, theta in lines[i]:
+                if (theta > numpy.pi/180*105 or theta < numpy.pi/180*75):
+                    index.append(i)
     
-    else:
-        return lines
+        #Suppression des lignes verticales
+        for i in sorted(index, reverse=True):
+            lines = numpy.delete(lines, i, 0)
+     
+    return lines
+
+##----------------------------------------------------------------------
+#def keepVerticalLines(lines):
+    #"""Garde uniquement les lignes verticales (version opencv linux)"""
+    #if lines is not None:
+        #index = list()
+        #i = 0
+        #for rho, theta in lines[0]:
+            #if not (numpy.pi/180*105 < theta  or theta < numpy.pi/180*75):
+                #index.append(i)
+            #i += 1
+        
+        ## Suppression des lignes horizontales
+        #mask = numpy.ones(len(lines[0]), dtype=bool)
+        #mask[index] = False
+        
+        #return numpy.array([lines[0][mask]])
+    
+    #else:
+        #return lines
+
+##----------------------------------------------------------------------
+#def keepHorizontalLines(lines):
+    #"""Garde uniquement les lignes horizontales (version opencv linux)"""
+    #if lines is not None:
+        #index = list()
+        #i = 0
+        #for rho, theta in lines[0]:
+            #if (numpy.pi/180*105 < theta  or theta < numpy.pi/180*75):
+                #index.append(i)
+            #i += 1
+        
+        ## Suppression des lignes verticales
+        #mask = numpy.ones(len(lines[0]), dtype=bool)
+        #mask[index] = False
+        
+        #return numpy.array([lines[0][mask]])
+    
+    #else:
+        #return lines
 
 #----------------------------------------------------------------------
 def drawLines(img, lines, color=(0, 0, 255), thickness=2):
@@ -112,7 +144,5 @@ def getMiddleLine(lines):
 #----------------------------------------------------------------------
 def getPixelColor(img, (x, y)):
     """Donne la couleur BlueGreenRed d'un pixel"""
-    #print((x, y))
-    #print("Blue : " + str(img[y][x][0]))
-    #print("Green : " + str(img[y][x][1]))
-    #print("Red : " + str(img[y][x][2]))
+    print("Cercle : " + str((x, y)) + "   Blue : " + str(img[y][x][0]) + " Green : " + str(img[y][x][1]) + " Red : " + str(img[y][x][2]))
+    return (img[y][x][0], img[y][x][1], img[y][x][2])

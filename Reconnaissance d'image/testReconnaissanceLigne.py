@@ -12,7 +12,7 @@ import cv2
 import libReconnaissanceImage as libRI
 
 resolution = (640, 480) # Résolution caméra
-TCP_IP = '10.12.152.157' # Adresse du serveur
+TCP_IP = '10.0.0.202' # Adresse du serveur
 TCP_PORT = 8123 # Port de communication
 
 #----------------------------------------------------------------------
@@ -45,12 +45,12 @@ def main():
     cv2.resizeWindow('Reglages', 400, 400)
     cv2.createTrackbar("t1", "Reglages", 70, 255, nothing) # Seuil houghlines t1
     cv2.createTrackbar("t2", "Reglages", 70, 255, nothing) # Seuil houghlines t2
-    cv2.createTrackbar("Threshold", "Reglages", 330, 500, nothing) # Longueur minimale admissible d'un segment
-    cv2.createTrackbar("minDist", "Reglages", 90, 255, nothing) # distance minimale entre chaque cercles de houghcircles
-    cv2.createTrackbar("param1", "Reglages", 40, 255, nothing)
-    cv2.createTrackbar("param2", "Reglages", 40, 255, nothing)
-    cv2.createTrackbar("minRadius", "Reglages", 50, 255, nothing) # rayon cercle minimum
-    cv2.createTrackbar("maxRadius", "Reglages", 90, 255, nothing) # rayon cercle maximum
+    cv2.createTrackbar("Threshold", "Reglages", 100, 500, nothing) # Longueur minimale admissible d'un segment
+    cv2.createTrackbar("minDist", "Reglages", 110, 255, nothing) # distance minimale entre chaque cercles de houghcircles
+    cv2.createTrackbar("param1", "Reglages", 70, 255, nothing)
+    cv2.createTrackbar("param2", "Reglages", 70, 255, nothing)
+    cv2.createTrackbar("minRadius", "Reglages", 70, 255, nothing) # rayon cercle minimum
+    cv2.createTrackbar("maxRadius", "Reglages", 85, 255, nothing) # rayon cercle maximum
     
     while(True):
         length = recvall(sock, 16)
@@ -76,8 +76,8 @@ def main():
             # Reconnaissance lignes
             imgGray = cv2.cvtColor(data, cv2.COLOR_BGR2GRAY) # Conversion en niveau de gris
             imgEdges = cv2.Canny(imgGray, t1, t2, apertureSize=3) # Binarisation de l'image
-            houghLines = cv2.HoughLines(imgEdges, 3, 5*numpy.pi/180, HoughLinesThreshold) # Transformée de Hough Lines
-            #imgHoughLines = libRI.drawLines(imgHoughLines, libRI.keepHorizontalLines(houghLines)) # Tracée lignes horizontales
+            houghLines = cv2.HoughLines(imgEdges, 3, 3*numpy.pi/180, HoughLinesThreshold) # Transformée de Hough Lines
+            imgHoughLines = libRI.drawLines(imgHoughLines, libRI.keepHorizontalLines(houghLines)) # Tracée lignes horizontales
             imgHoughLines = libRI.drawLines(imgHoughLines, libRI.keepVerticalLines(houghLines), color=(0,255,0)) # Tracée lignes verticales
             middleLine = libRI.getMiddleLine(houghLines) # Acquisition ligne de la route
             if middleLine is not None:
@@ -92,7 +92,9 @@ def main():
                 for i in houghCircles[0,:]:
                     cv2.circle(imgHoughCircle, (i[0], i[1]), i[2], (0, 255, 0), 2) # Affichage cercles
                     cv2.circle(imgHoughCircle, (i[0], i[1]), 2, (0, 0, 255), 3) # Affichage centres des cercles
-                    libRI.getPixelColor(data, (i[0], i[1])) # Affichage couleur pixel
+                    color = libRI.getPixelColor(data, (i[0], i[1])) # Affichage couleur pixel
+                    if(i[0] < 320 and color[0] < 220 and color[0] > 134 and color[1] < 160 and color[1] > 110 and color[2] < 80 and color[2] > 35):
+                        print("Panneau stop bleu detecte !\r\n")
 
             # Affichage des images
             cv2.imshow("imgEdges", imgEdges);
