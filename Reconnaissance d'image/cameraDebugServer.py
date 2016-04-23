@@ -38,3 +38,4 @@ class CameraDebugServer:
         """Lorsque la classe se ferme on close le socket"""
         self.s.close()
         print("Socket closed")
+        

@@ -34,14 +34,14 @@ void loop()
       if(buffer == "straight") set_vitesse_mot(MAX_SPEED_LEFT, MAX_SPEED_RIGHT);
       else if(buffer == "back") set_vitesse_mot(-MAX_SPEED_LEFT, -MAX_SPEED_RIGHT);
       else if(buffer == "stop") set_vitesse_mot(0);
-      else if(buffer == "ping") Serial.println("pong");
+      else if(buffer == "ping") Serial.println("#pong;");
       else if(buffer == "deviation")
       {
         float erreur = 0;
         erreur = Serial.readStringUntil(';').toFloat();
         pid(erreur);
       }
-      else if(buffer == "bat_level") Serial.println("Niveau batterie : " + String(bat_level()));
+      else if(buffer == "bat_level") Serial.println("#bat_level:" + String(bat_level()) + ";");
       else if(buffer == "kp") set_kp(Serial.readStringUntil(';').toFloat());
       else if(buffer == "ki") set_ki(Serial.readStringUntil(';').toFloat());
       else if(buffer == "kd") set_kd(Serial.readStringUntil(';').toFloat());

@@ -11,7 +11,7 @@ import threading
 
 ########################################################################
 class ComSocket(threading.Thread):
-    """Classe qui gère la com socket"""
+    """Classe qui gère la com socket, hérite de thread"""
 
     #----------------------------------------------------------------------
     def __init__(self, host, port):
@@ -32,7 +32,8 @@ class ComSocket(threading.Thread):
     #----------------------------------------------------------------------
     def recevoir(self):
         """Fonction qui reçoit les données"""
-        data = self.sock.recv(2048)
+        r = self.sock.recv(2048)
+        # traiter les données ici
         
     #----------------------------------------------------------------------
     def envoyer(self, data):
@@ -43,4 +44,5 @@ class ComSocket(threading.Thread):
     def close(self):
         """"""
         self.sock.close()
-        print("Socket " + host + ":" + str(port) + " closed")
+        print("Socket " + self.ip + ":" + str(self.port) + " closed")
+        

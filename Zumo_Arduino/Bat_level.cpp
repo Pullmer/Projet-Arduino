@@ -9,7 +9,7 @@ void alerteBatterie()
 {
   if(bat_level() < 4.6)
   {
-    Serial.println("Low battery !");
+    Serial.println("#lowbat;");
   }
 }
 

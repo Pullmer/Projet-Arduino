@@ -55,3 +55,4 @@ class SerialArduino:
         """"""
         self.serialArduino.close()
         print("Serial port closed")
+        

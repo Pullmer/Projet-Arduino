@@ -20,7 +20,7 @@ void alerte()
 {
    if(obstacle() && !blocked) // obstacle détecté
    {
-    Serial.println("obstacle !");
+    Serial.println("#obstacledetected;");
     blocked = true;
     set_vitesse_mot(0); // stop moteurs
    }
@@ -28,7 +28,7 @@ void alerte()
    {
     run_previous_state_mot();
     blocked = false;
-    Serial.println("obstacle ok, redemarrage moteur");
+    Serial.println("#obstacleleft;");
    }
 }
 

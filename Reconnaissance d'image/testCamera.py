@@ -32,3 +32,4 @@ except Exception as e:
 finally:
     serveur.close()
     camera.close()
+    
