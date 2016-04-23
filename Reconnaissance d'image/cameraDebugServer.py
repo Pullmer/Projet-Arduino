@@ -18,7 +18,7 @@ class CameraDebugServer:
         self.TCP_PORT = port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.bind(('', self.TCP_PORT))
+        self.s.bind(('', port))
         self.s.listen(True)
         self.conn, self.addr = self.s.accept()
         print("Socket ouvert")
@@ -31,15 +31,10 @@ class CameraDebugServer:
             self.conn.send(data)
         except:
             print("Interruption du socket, en attente...")
-            CameraDebugServer.__init__(self)
+            self.__init__(self)
 
     #----------------------------------------------------------------------
     def close(self):
         """Lorsque la classe se ferme on close le socket"""
-        try:
-            self.s.close()
-            print("Socket closed")
-        except:
-            pass
-
-
+        self.s.close()
+        print("Socket closed")

@@ -17,7 +17,6 @@ class SerialArduino:
     def __init__(self):
         """Constructor"""
         self.serialArduino = serial.Serial('/dev/ttyACM0', 115200) # Ouverture port série
-        time.sleep(1)
         self.serialArduino.flushInput() # Vide le port série
         self.checkSerialCom()
         
@@ -27,7 +26,7 @@ class SerialArduino:
         while("pong" not in self.Read()): # Attente d'une réponse de l'aduino
                 self.Send("#ping;")
                 print("Ping sent...")
-                time.sleep(0.5)
+                time.sleep(0.2)
                 
         print("Received pong")
         
@@ -43,3 +42,16 @@ class SerialArduino:
     def Read(self):
         """Lit données venant de l'arduino"""
         return self.serialArduino.read(self.serialArduino.inWaiting()) if(self.serialArduino.inWaiting() > 0) else ""
+
+    #----------------------------------------------------------------------
+    def waitMsg(self, timeout=3):
+        """Attend qu'un message arrive"""
+        debut = time.time()
+        while not (self.serialArduino.inWaiting() > 0) and (time.time() - debut) < timeout:
+            time.sleep(0.1)
+    
+    #----------------------------------------------------------------------
+    def close(self):
+        """"""
+        self.serialArduino.close()
+        print("Serial port closed")

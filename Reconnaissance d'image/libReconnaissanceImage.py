@@ -27,9 +27,9 @@ def rhothetaToXY(rho, theta):
 def lineToAngle(((x1, y1), (x2, y2))):
     """Conversion d'une droite en un angle par rapport à la verticale"""
     if y1 != y2:
-        return numpy.arctan(float(x1 - x2)/(y1 - y2))*180/numpy.pi
+        return round(numpy.arctan(float(x1 - x2)/(y1 - y2))*180/numpy.pi, 2)
     else:
-        return 90.0
+        return 90.00
 
 #----------------------------------------------------------------------
 def keepVerticalLines(lines):

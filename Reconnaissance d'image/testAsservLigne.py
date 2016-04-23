@@ -7,21 +7,26 @@
 """
 
 import picamera.array
-import numpy
 import cv2
 import libReconnaissanceImage as libRI
 import picamera
 import comSerialArduino
-import time
 
 arduino = comSerialArduino.SerialArduino()
 camera = picamera.PiCamera() # Démarrage caméra
 camera.led = False # Eteint la led de la caméra
 camera.resolution = (640, 480) # Résolution
-camera.framerate = 4
+camera.framerate = 3
 camera.video_stabilization = True # Default : false
 camera.hflip, camera.vflip = True, True
 stream = picamera.array.PiRGBArray(camera)
+
+# Réglage PID
+arduino.Send("#kp;0;#kd;0;#ki;0;#askPIDParameters;")
+arduino.waitMsg(timeout=10)
+a = arduino.Read()
+if len(a) > 0:
+    print(a)
 
 #----------------------------------------------------------------------
 def main():
@@ -29,7 +34,6 @@ def main():
     
     try:
         while True:
-            debut = time.time()
             camera.capture(stream, format='bgr')
             stream.truncate(0)
             data = stream.array # Image capturée
@@ -42,17 +46,17 @@ def main():
                 
             middleLine = libRI.getMiddleLine(houghLines) # Acquisition ligne de la route
             if middleLine is not None:
-                print("Deviation : " + str(libRI.lineToAngle((middleLine[0], middleLine[1]))))
-                #arduino.Send("#deviation;"  + ";")
+                print("Deviation : " + str(-1*libRI.lineToAngle((middleLine[0], middleLine[1]))))
+                arduino.Send("#deviation;"  + str(-1*libRI.lineToAngle((middleLine[0], middleLine[1]))) + ";")
                 
-            a = arduino.Read()
-            if len(a) > 0:
-                print(a)
-            
+    except Exception as e:
+        print(str(e))
+        
     finally:
+        arduino.Send("#stop;#kp;0;#kd;0;#ki;0;")
         camera.close()
         stream.close()
-        print("Error : stream and camera closed")
+        arduino.close()
             
 if __name__ == '__main__':
     main()

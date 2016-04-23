@@ -25,7 +25,10 @@ try:
             camera.capture(stream, format='bgr') # Prise d'une image
             image = stream.array.tostring()
             serveur.sendData(image) # Envoi de l'image sur le réseau
+            
+except Exception as e:
+    print(str(e))
+    
 finally:
     serveur.close()
     camera.close()
-    print("Camera closed")

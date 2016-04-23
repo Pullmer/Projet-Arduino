@@ -8,7 +8,6 @@
 
 String buffer;
 SimpleTimer timer_obstacle;
-SimpleTimer timer_pid;
 SimpleTimer timer_batterie;
 Pushbutton button(ZUMO_BUTTON);
 
@@ -17,16 +16,13 @@ void setup()
   Serial.begin(115200);
   
   //timer_obstacle.setInterval(200, alerte);
-  timer_pid.setInterval(50, pid);
   timer_batterie.setInterval(5000, alerteBatterie);
   refresh_moteurs();
 }
 
 void loop()
 {
-  float erreur = 0;
   //timer_obstacle.run();
-  timer_pid.run();
   timer_batterie.run();
   
   if(Serial.available() > 0)
@@ -41,14 +37,15 @@ void loop()
       else if(buffer == "ping") Serial.println("pong");
       else if(buffer == "deviation")
       {
+        float erreur = 0;
         erreur = Serial.readStringUntil(';').toFloat();
-        refreshAngularError(erreur);
-        Serial.println(erreur);
+        pid(erreur);
       }
       else if(buffer == "bat_level") Serial.println("Niveau batterie : " + String(bat_level()));
       else if(buffer == "kp") set_kp(Serial.readStringUntil(';').toFloat());
       else if(buffer == "ki") set_ki(Serial.readStringUntil(';').toFloat());
       else if(buffer == "kd") set_kd(Serial.readStringUntil(';').toFloat());
+      else if(buffer == "askPIDParameters") Serial.println(getPIDParameters());
     }
     else Serial.read();
   }

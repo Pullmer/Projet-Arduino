@@ -12,7 +12,7 @@ import cv2
 import libReconnaissanceImage as libRI
 
 resolution = (640, 480) # Résolution caméra
-TCP_IP = '10.0.0.202' # Adresse du serveur
+TCP_IP = '10.12.152.157' # Adresse du serveur
 TCP_PORT = 8123 # Port de communication
 
 #----------------------------------------------------------------------

@@ -6,21 +6,22 @@ int previous_vitesse_mot[] = {0, 0};
 float erreur = 0;
 float erreur_precedente = 0;
 float somme_erreur = 0;
-float kp = 3;
+float kp = 0.0;
 float kd = 0.0;
 float ki = 0.0;
 float output_pid = 0;
 
 ZumoMotors motors;
 
-void pid()
+void pid(float e)
 {
+  erreur = e;
   somme_erreur += erreur;
+  output_pid = kp*erreur + ki*somme_erreur + kd*(erreur - erreur_precedente);
   erreur_precedente = erreur;
   
-  output_pid = kp*erreur + ki*somme_erreur + kd*(erreur - erreur_precedente);
-  if(output_pid < -100) output_pid = -100;
-  else if(output_pid > 100) output_pid = 100;
+  if(output_pid < -80) output_pid = -80;
+  else if(output_pid > 80) output_pid = 80;
   
   if(vitesse_mot[0] == 0 && vitesse_mot[1] == 0) motors.setSpeeds(output_pid, -output_pid); // robot à l'arrêt
 }
@@ -73,7 +74,8 @@ void run_previous_state_mot()
   refresh_moteurs();
 }
 
-void refreshAngularError(float e)
+String getPIDParameters()
 {
-  erreur = e;
+  return "kp : " + String(kp) + "; " + "ki : " + String(ki) + "; " + "kd : " + String(kd) + ";";
 }
+
