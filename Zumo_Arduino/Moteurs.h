@@ -3,8 +3,8 @@
 #include "Arduino.h"
 #include <ZumoMotors.h>
 
-#define MAX_SPEED_LEFT 100
-#define MAX_SPEED_RIGHT 100
+#define MAX_SPEED_LEFT 90
+#define MAX_SPEED_RIGHT 95
 
 void pid(float e);
 void set_kp(float k);

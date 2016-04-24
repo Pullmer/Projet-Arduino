@@ -15,7 +15,7 @@ void setup()
 {
   Serial.begin(115200);
   
-  //timer_obstacle.setInterval(200, alerte);
+  timer_obstacle.setInterval(100, alerteObstacle);
   timer_batterie.setInterval(5000, alerteBatterie);
   refresh_moteurs();
 }

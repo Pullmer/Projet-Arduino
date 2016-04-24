@@ -4,6 +4,6 @@
 #include <NewPing.h>
 
 boolean obstacle();
-void alerte();
+void alerteObstacle();
 
 #endif

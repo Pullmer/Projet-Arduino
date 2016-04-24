@@ -76,6 +76,6 @@ void run_previous_state_mot()
 
 String getPIDParameters()
 {
-  return "#kp;" + String(kp) + ";" + "#ki;" + String(ki) + ";" + "#kd;" + String(kd) + ";";
+  return "#kp:" + String(kp) + ";" + "#ki:" + String(ki) + ";" + "#kd:" + String(kd) + ";";
 }
 

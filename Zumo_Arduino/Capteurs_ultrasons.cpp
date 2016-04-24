@@ -16,7 +16,7 @@ boolean obstacle()
   return 0 < x && x < DISTANCE_STOP;
 }
 
-void alerte()
+void alerteObstacle()
 {
    if(obstacle() && !blocked) // obstacle détecté
    {
@@ -26,7 +26,7 @@ void alerte()
    }
    else if(!obstacle() && blocked) // il n'y a plus d'obstacle
    {
-    run_previous_state_mot();
+    //run_previous_state_mot();
     blocked = false;
     Serial.println("#obstacleleft;");
    }
