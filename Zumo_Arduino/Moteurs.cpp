@@ -1,29 +1,39 @@
 #include "Moteurs.h"
+#include "Centrale_inertielle.h"
 
 int vitesse_mot[] = {0, 0};
 int previous_vitesse_mot[] = {0, 0};
 
-float erreur = 0;
+float consigne = 0;
 float erreur_precedente = 0;
 float somme_erreur = 0;
-float kp = 0.0;
-float kd = 0.0;
-float ki = 0.0;
-float output_pid = 0;
+float kp = 5.0;
+float kd = 0.1;
+float ki = 0.01;
 
 ZumoMotors motors;
 
-void pid(float e)
+void pid_boussole()
 {
-  erreur = e;
+  float erreur = relativeHeading(consigne, averageHeading());
   somme_erreur += erreur;
-  output_pid = kp*erreur + ki*somme_erreur + kd*(erreur - erreur_precedente);
+  float output_pid = kp*erreur + ki*somme_erreur + kd*(erreur - erreur_precedente);
   erreur_precedente = erreur;
   
-  if(output_pid < -80) output_pid = -80;
-  else if(output_pid > 80) output_pid = 80;
+  if(output_pid < -120) output_pid = -120;
+  else if(output_pid > 120) output_pid = 120;
   
-  if(vitesse_mot[0] == 0 && vitesse_mot[1] == 0) motors.setSpeeds(output_pid, -output_pid); // robot à l'arrêt
+  if(vitesse_mot[0] == 0 && vitesse_mot[1] == 0) motors.setSpeeds(-output_pid, output_pid); // robot à l'arrêt
+}
+
+void setConsigneBoussole(float c)
+{
+  consigne = c;
+}
+
+void resetPIDBoussole()
+{
+  somme_erreur = 0;
 }
 
 void set_kp(float k)

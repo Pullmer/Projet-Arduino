@@ -20,6 +20,7 @@ try:
     while True:
         a = raw_input("Entrez un msg : ")
         conn.send(a)
+        print(conn.recv(1024))
 
 except Exception as e:
     print(str(e))

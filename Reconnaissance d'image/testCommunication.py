@@ -24,11 +24,13 @@ def main():
         sock.start() # Démarrage thread
         ardu.start() # Démarrage thread
 
-        while True:
+        while not sock.kill_received and not ardu.kill_received:
             pass # Boucle infinie pour tester le fonctionnement des threads...
             
     except Exception as e:
         print(str(e))
+        sock.kill_received = True
+        ardu.kill_received = True
         
     finally:
         sock.join()

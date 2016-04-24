@@ -18,6 +18,7 @@ class SerialArduino(threading.Thread):
     def __init__(self):
         """Constructor"""
         threading.Thread.__init__(self) # Initialisation du thread
+        self.kill_received = False
         self.instanceSock = None # Instance communication socket
         self.serialArduino = serial.Serial('/dev/ttyACM0', 115200) # Ouverture port série
         self.serialArduino.flushInput() # Vide le port série
@@ -32,10 +33,12 @@ class SerialArduino(threading.Thread):
     #----------------------------------------------------------------------
     def run(self):
         """Boucle thread"""
-        while True:
+        while not self.kill_received:
             a = self.Read()
-            if a != "":
+            if a is not None:
                 self.processData(a)
+                
+        print("Thread arduino killed !")        
         
     #----------------------------------------------------------------------
     def checkSerialCom(self):
@@ -45,28 +48,47 @@ class SerialArduino(threading.Thread):
                 print("Ping sent...")
                 time.sleep(0.2)
                 
-        print("Received pong")
+        print("Received pong !")
         
     #----------------------------------------------------------------------
     def Send(self, data):
         """Envoie data sur le port série de l'arduino"""
-        if data:
-            try:
+        try:
+            if len(data) > 0 and data is not None:
                 self.serialArduino.write(data)
-            except:
-                print("Problème port série !")
+        except:
+            print("Erreur transmission serie !")
+            self.kill_received = True
+            self.instanceSock.kill_received = True
     
     #----------------------------------------------------------------------
     def Read(self):
         """Lit données venant de l'arduino"""
-        return self.serialArduino.read(self.serialArduino.inWaiting()) if(self.serialArduino.inWaiting() > 0) else ""
+        try:
+            return self.serialArduino.read(self.serialArduino.inWaiting()) if(self.serialArduino.inWaiting() > 0) else ""
+        except:
+            print("Erreur lecture port serie !")
+            self.kill_received = True
+            self.instanceSock.kill_received = True
 
     #----------------------------------------------------------------------
-    def processData(self, data):
+    def processData(self, r):
         """Fonction traitement des données venant de l'arduino"""
-        print("reception donnees arduino : " + str(data))
-        if self.instanceSock is not None:
-            self.instanceSock.Send(data)
+        if len(r) > 0:
+            print("Reception donnees venant de l'arduino : " + str(r))
+            
+            data = r.split('#')
+            for i in data:
+                if "bat_level" in i:
+                    self.instanceSock.Send("Batterie : " + i[i.find(':') + 1:i.find(';')])
+                elif "lowbat" in i:
+                    self.instanceSock.Send("LOW_BAT")
+                elif "obstacledetected" in i:
+                    self.instanceSock.Send("OBSTACLE_DETECTED")
+                elif "obstacleleft" in i:
+                    self.instanceSock.Send("OBSTACLE_LEFT")
+                elif "pong" in i:
+                    self.instanceSock.Send("PONG")
         
     #----------------------------------------------------------------------
     def close(self):

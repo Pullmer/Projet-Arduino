@@ -6,7 +6,9 @@
 #define MAX_SPEED_LEFT 90
 #define MAX_SPEED_RIGHT 95
 
-void pid(float e);
+void pid_boussole();
+void setConsigneBoussole(float c);
+void resetPIDBoussole();
 void set_kp(float k);
 void set_kd(float k);
 void set_ki(float k);

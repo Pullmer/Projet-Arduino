@@ -46,7 +46,7 @@ namespace Interface_PID
 
         private void numericUpDown_angle_ValueChanged(object sender, EventArgs e)
         {
-            if (serialPort1.IsOpen) serialPort1.WriteLine("#deviation;" + numericUpDown_angle.Value.ToString() + ";");
+            if (serialPort1.IsOpen) serialPort1.WriteLine("#consigne;" + numericUpDown_angle.Value.ToString() + ";");
         }
 
         private void numericUpDown_kp_ValueChanged(object sender, EventArgs e)
@@ -76,7 +76,7 @@ namespace Interface_PID
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (serialPort1.IsOpen) serialPort1.WriteLine("#stop;");
+            if (serialPort1.IsOpen) serialPort1.WriteLine("#pause;");
         }
 
         private void button3_Click(object sender, EventArgs e)
