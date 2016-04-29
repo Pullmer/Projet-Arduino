@@ -69,6 +69,9 @@ class Ecran():
 		
 	def creerMenu(self,fenetre):
 	
+		def infos():
+			showinfo('A propos','cartographie et exploration de labyrinthe\n'+'developpé par :\n'+'BIDOUNG Katia\n'+'GONÇALVES Nicolas\n'+'MAISON Jonas\n'+'THOMAS Cyprien\n')
+		
 		def details_robot(id):
 			self.controller.details(id)
 			
@@ -104,7 +107,7 @@ class Ecran():
 		menubar.add_cascade(label="Robot", menu=menu2)
 
 		menu3 = Menu(menubar, tearoff=0)
-		menu3.add_command(label="A propos", command=alert)
+		menu3.add_command(label="A propos", command=infos)
 		menubar.add_cascade(label="Aide", menu=menu3)
 
 		fenetre.config(menu=menubar)
@@ -157,8 +160,14 @@ class Ecran():
 							showinfo('details du robot '+str(id),text)
 							
 					if msg == "nouveau robot":
-						self.dessin.creerPoint()
+						id = self.queue.get(0)
+						self.dessin.creerPoint(id)
 						showinfo('connexion','Un robot vient de se connecter')
+						
+					if msg == "deconnexion":
+						id = self.queue.get(0)
+						self.dessin.effacerPoint(id)
+						showinfo('deconnexion','Le robot ' + str(id) + ' vient de se deconnecter')
 				except Queue.Empty:
 					pass	
 					

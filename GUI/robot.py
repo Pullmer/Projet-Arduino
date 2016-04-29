@@ -46,6 +46,11 @@ class Robot:
 			self.controller.dessinerCheminParcouru(self,self.ancienne_position,self.position)   #on demande de tracer le chemin qui a été parcouru
 			self.labyrinthe.demandeDirection(self)   #demande de direction au labyrinthe
 			
+		elif l[0] == "CLOSE_CONNEXION":
+			self.socket.fermer()
+			self.controller.deconnexion(self)
+			
+			
 	#méthode qui demande l'envoi d'un ordre au robot
 	def donnerOrdre(self,ordre):
 		self.socket.envoyer(ordre)
@@ -81,3 +86,10 @@ class Robot:
 	#méthode qui demande l'arret du robot
 	def stop(self):
 		self.donnerOrdre("stop")
+		
+	def erreur(self):
+		try:
+			self.socket.fermer()
+		except:
+			print("erreur")
+		self.controller.deconnexion(self)

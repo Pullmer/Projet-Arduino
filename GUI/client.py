@@ -21,7 +21,8 @@ print(ordre)
 bat = bat - 1
 time.sleep(5)
 
-while True :
+k=5
+while k>0 :
 	if i==1:
 		x = x+5
 		buffer = "DIRECTION?\n"
@@ -57,4 +58,6 @@ while True :
 	bat = bat - 1
 	i = (i+1)%4
 	time.sleep(5)
-
+	k = k-1
+print("fin")
+s.send("CLOSE_CONNEXION")
