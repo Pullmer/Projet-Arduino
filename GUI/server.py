@@ -11,6 +11,7 @@ class ClientThread(threading.Thread):
 	def __init__(self, ip, port, clientsocket, labyrinthe,controller):
 		threading.Thread.__init__(self)    #on appelle le constructeur de la classe Thread
 		self.clientsocket = clientsocket   #socket de communication avec un robot
+		self.clientsocket.setblocking(1)
 		self.deconnexion = False
 		self.robot = Robot(self,ip, port,labyrinthe,controller)   # on instancie un objet de la classe robot
 		

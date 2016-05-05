@@ -225,3 +225,15 @@ class Labyrinthe:
 			for i in adjacents:
 				liste.append(self.labyrinthe.node[i]['coords'])
 		return liste
+		
+	def analyserIntersection(self,coords):
+		carrefour = self.rechercheNoeud(coords)
+		liste = []
+		non_explore = 0
+		if carrefour != -1:
+			adjacents = self.labyrinthe.neighbors(carrefour)
+			for noeud in adjacents:
+				if self.labyrinthe[carrefour][noeud] == 0:
+					non_explore = non_explore + 1
+		taille = len(adjacents)
+		return (taille,non_explore)

@@ -5,6 +5,7 @@ from Tkinter import *
 from tkMessageBox import *
 import Queue
 from dessin import *
+from question import *
 
 class Ecran():
 
@@ -19,28 +20,28 @@ class Ecran():
 					for position in carrefours_adjacents:
 						dx = position[0]-position_curseur[0]
 						dy = position[1]-position_curseur[1]
-						if dx == 0 and dy >0:
+						if dx == 0 and dy >0.11:
 							self.dessin.deplacerCurseur(position)
 							break
 				elif touche == "Down":
 					for position in carrefours_adjacents:
 						dx = position[0]-position_curseur[0]
 						dy = position[1]-position_curseur[1]
-						if dx == 0 and dy <0:
+						if dx == 0 and dy <-0.11:
 							self.dessin.deplacerCurseur(position)
 							break
 				elif touche == "Right":
 					for position in carrefours_adjacents:
 						dx = position[0]-position_curseur[0]
 						dy = position[1]-position_curseur[1]
-						if dx > 0 and dy == 0:
+						if dx > 0.11 and dy == 0:
 							self.dessin.deplacerCurseur(position)
 							break
 				elif touche == "Left":
 					for position in carrefours_adjacents:
 						dx = position[0]-position_curseur[0]
 						dy = position[1]-position_curseur[1]
-						if dx < 0 and dy == 0:
+						if dx < -0.11 and dy == 0 and dx!=-0.1:
 							self.dessin.deplacerCurseur(position)
 							break
 		self.controller = controller
@@ -84,20 +85,29 @@ class Ecran():
 			else:
 				self.dessin.afficherCurseur()
 			
-		def changer_mode():
-			if askyesno('changement de mode','Voulez vous passer en mode exploration?'):
-				print('oui')
+		def lancer():
+			showinfo('information','lancement du serveur')
+			self.controller.lancerServeur()
+			
+		def go_pause():
+			question = Pause(self.fenetre, self.controller)
+			
+		def quitter():
+			if self.controller.connexionsEtablies():
+				showinfo('erreur', 'Des connexions sont toujours présentes')
 			else:
-				print('non')
+				self.controller.quitter()
+				fenetre.destroy()
 		
 		menubar = Menu(fenetre)
 		
 		menu1 = Menu(menubar, tearoff=0)
 		menu1.add_command(label="Commencer", command=alert)
-		menu1.add_command(label="Mode", command=changer_mode)
+		menu1.add_command(label="Lancer", command=lancer)
+		menu1.add_command(label="Partir/Arreter", command=go_pause)
 		menu1.add_command(label="Curseur", command=curseur)
 		menu1.add_separator()
-		menu1.add_command(label="Quitter", command=fenetre.quit)
+		menu1.add_command(label="Quitter", command=quitter)
 		menubar.add_cascade(label="Fichier", menu=menu1)
 
 		menu2 = Menu(menubar, tearoff=0)
@@ -118,19 +128,33 @@ class Ecran():
 		Label(l, text="Robot 1:\nPosition : (X,Y)\nBatterie : 95%\n\nRobot 2:\nPosition : (X,Y)\nBatterie : 95%\n\nRobot 3:\nPosition : (X,Y)\nBatterie : 95%\n\n").pack()
 		
 	def creerBoutons(self,frame):
-	
-		def lancer():
-			showinfo('information','lancement du serveur')
-			self.controller.lancerServeur()
 			
 		def pause():
 			self.controller.pause()
 			
-		bouton_start=Button(frame, text="Lancer", command=lancer)
-		bouton_start.pack(side=BOTTOM, padx=10, pady=10)
+		def go():
+			if self.dessin.curseurUtilise():
+				question = Question(self.fenetre, self.controller)
+			else:
+				showinfo('erreur', 'Le curseur n\'est pas utilisé !')
+				
+		def voir():
+			if self.dessin.curseurUtilise():
+				position = self.dessin.getPositionCurseur()
+				texte = self.controller.voirInfosIntersection(position)
+				showinfo('intersection',texte)
+			else:
+				showinfo('erreur', 'Le curseur n\'est pas utilisé !')
 		
 		bouton_pause=Button(frame, text="Pause", command=pause)
 		bouton_pause.pack(side=BOTTOM, padx=10, pady=10)
+		
+		bouton_go=Button(frame, text="Aller à", command=go)
+		bouton_go.pack(side=BOTTOM, padx=10, pady=10)
+		
+		bouton_voir=Button(frame, text="Voir", command=voir)
+		bouton_voir.pack(side=BOTTOM, padx=10, pady=10)
+		
 	def rafraichirEcran(self):
 		while self.queue.qsize():
 				try:

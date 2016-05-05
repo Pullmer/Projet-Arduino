@@ -11,6 +11,8 @@ class Robot:
 			self.position = (0,0)       #position du robot
 			self.intersection = ("NON","OUI","NON")   #forme de la dernière intersection parcourue
 			self.ancienne_position = (0,0)   #ancienne position du robot
+			self.mode = "exploration"
+			self.state = "ready"
 			self.labyrinthe = labyrinthe     #reference vers le labyrinthe
 			self.controller = controller     #reference vers le controleur
 			controller.ajouterRobot(self)    #ajout à la liste des robots connus du controleur
@@ -21,7 +23,7 @@ class Robot:
 		l = recu.split("\n")
 		
 		#action à faire si c'est une demande de direction
-		if l[0] == "DIRECTION?":
+		if l[0] == "DIRECTION?" and self.mode == "exploration":
 			#on récupère la position
 			X = float(l[1].split(" : ")[1])
 			Y = float(l[2].split(" : ")[1])
@@ -45,6 +47,9 @@ class Robot:
 			
 			self.controller.dessinerCheminParcouru(self,self.ancienne_position,self.position)   #on demande de tracer le chemin qui a été parcouru
 			self.labyrinthe.demandeDirection(self)   #demande de direction au labyrinthe
+			
+		#elif l[0] == "DIRECTION?" and self.mode == "navigation":
+			#self.parcours.remove
 			
 		elif l[0] == "CLOSE_CONNEXION":
 			self.socket.fermer()
@@ -85,7 +90,12 @@ class Robot:
 		
 	#méthode qui demande l'arret du robot
 	def stop(self):
-		self.donnerOrdre("stop")
+		self.donnerOrdre("pause")
+		self.state = "pause"
+		
+	def go(self):
+		self.donnerOrdre("start")
+		self.state = "ready"
 		
 	def erreur(self):
 		try:
@@ -93,3 +103,9 @@ class Robot:
 		except:
 			print("erreur")
 		self.controller.deconnexion(self)
+		
+	def setMode(self, mode):
+		self.mode = mode
+		
+	def getState(self):
+		return self.state

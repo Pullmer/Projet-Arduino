@@ -12,18 +12,22 @@ class Serveur(threading.Thread):
 		threading.Thread.__init__(self)   #on appelle le constructeur de la classe Thread
 		self.tcpsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.tcpsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		self.tcpsock.settimeout(1)
 		self.tcpsock.bind(("",1111))    #on ecoute sur le port 1111
 		self.labyrinthe = labyrinthe    #reference vers le labyrinthe
 		self.controller = controller    #reference vers le controleur
+		self.terminer = False
 	
 	#code executé par le Thread
 	def run(self): 
-		while True:
-			self.tcpsock.listen(10)
-			(clientsocket, (ip, port)) = self.tcpsock.accept()   #on accepte la connexion d'un robot
-			newthread = ClientThread(ip, port, clientsocket, self.labyrinthe,self.controller)  #création d'un Thread qui s'occupera de la communication avec le robot
-			newthread.start()  #on lance le Thread
-			
-		
-	
-	
+		while (not self.terminer):
+			try:
+				self.tcpsock.listen(1)
+				(clientsocket, (ip, port)) = self.tcpsock.accept()   #on accepte la connexion d'un robot
+				newthread = ClientThread(ip, port, clientsocket, self.labyrinthe,self.controller)  #création d'un Thread qui s'occupera de la communication avec le robot
+				newthread.start()  #on lance le Thread
+			except:
+				pass
+	def eteindre(self):
+		self.tcpsock.close()
+		self.terminer = True

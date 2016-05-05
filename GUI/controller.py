@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from ecran import *
 from labyrinthe import *
 from serveur import *
@@ -58,9 +60,11 @@ class Controller:
 	def lancerServeur(self):
 		self.serveur.start()
 		
-	def pause(self):
-		for robot in self.robots.values():
-			robot.stop()
+	def pause(self,id):
+		self.robots.get(id).stop()
+		
+	def lancer_robot(self,id):
+		self.robots.get(id).go()
 			
 	def getAdjacents(self,coords):
 		return self.labyrinthe.getNoeudsAdjacents(coords)
@@ -74,3 +78,33 @@ class Controller:
 				break
 		self.queue.put("deconnexion")
 		self.queue.put(id)
+		
+	def changer_mode(self, id):
+		print("changement de mode du robot "+ str(id))
+		robot = self.robots.get(id)
+		robot.setMode("navigation")
+		robot.go()
+			
+	def voirInfosIntersection(self,position):
+		analyse = self.labyrinthe.analyserIntersection(position)
+		texte = "L'intersection est à la position :" + str(position) +'\n'
+		texte += "Il y a "+str(analyse[0])+" chemin(s).\n"
+		texte += "Il y a "+str(analyse[1])+" chemin(s) qui n'ont pas été explorés.\n"
+		return texte
+		
+	def isConnected(self,id):
+		if self.robots.get(id) == None:
+			return False
+		return True
+		
+	def getEtatRobot(self,id):
+		return self.robots.get(id).getState()
+		
+	def connexionsEtablies(self):
+		for cle in self.robots.keys():
+			if self.robots.get(cle) != None:
+				return True
+		return False
+		
+	def quitter(self):
+		self.serveur.eteindre()
