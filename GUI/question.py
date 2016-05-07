@@ -6,9 +6,10 @@ from tkMessageBox import *
 
 class Question(Tkinter.Toplevel):
 	
-	def __init__(self,fenetre,controller):
+	def __init__(self,fenetre,controller,destination):
 		Tkinter.Toplevel.__init__(self,fenetre)
 		self.controller = controller
+		self.destination = destination
 		
 		self.grab_set()
 		self.focus_set()
@@ -16,7 +17,7 @@ class Question(Tkinter.Toplevel):
 		def robot(id):
 			if self.controller.isConnected(id):
 				if self.controller.getEtatRobot(id) == "ready":
-					self.controller.changer_mode(id)
+					self.controller.aller(id,destination)
 				else:
 					showinfo('erreur', "Ce robot n'a pas terminé la tâche qui lui a été affectée")
 			else:

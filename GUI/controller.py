@@ -79,10 +79,10 @@ class Controller:
 		self.queue.put("deconnexion")
 		self.queue.put(id)
 		
-	def changer_mode(self, id):
+	def aller(self, id, destination):
 		print("changement de mode du robot "+ str(id))
 		robot = self.robots.get(id)
-		robot.setMode("navigation")
+		robot.naviguer(destination)
 		robot.go()
 			
 	def voirInfosIntersection(self,position):

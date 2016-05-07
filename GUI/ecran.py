@@ -134,7 +134,8 @@ class Ecran():
 			
 		def go():
 			if self.dessin.curseurUtilise():
-				question = Question(self.fenetre, self.controller)
+				position = self.dessin.getPositionCurseur()
+				question = Question(self.fenetre, self.controller, position)
 			else:
 				showinfo('erreur', 'Le curseur n\'est pas utilisé !')
 				
