@@ -2,8 +2,9 @@
 
 class Robot:
 
-	def __init__(self,socket,ip, port,labyrinthe,controller):
+	def __init__(self,socket,ip, port,labyrinthe,controller,ordreDirect):
 			self.socket = socket   #référence vers le thread de communication
+			self.ordreDirect = ordreDirect
 			self.ip = ip   #adresse ip du robot
 			self.port = port   #port de communication
 			self.bat_level = 100   #niveau de batterie
@@ -77,7 +78,7 @@ class Robot:
 			self.controller.deconnexion(self)
 			
 			
-	#méthode qui demande l'envoi d'un ordre au robot
+	#méthode qui demande l'envoi d'un ordre (une réponse) au robot
 	def donnerOrdre(self,ordre):
 		self.socket.envoyer(ordre)
 		
@@ -111,11 +112,11 @@ class Robot:
 		
 	#méthode qui demande l'arret du robot
 	def stop(self):
-		self.donnerOrdre("pause")
+		self.ordreDirect.envoyer("pause")
 		self.state = "pause"
 		
 	def go(self):
-		self.donnerOrdre("start")
+		self.ordreDirect.envoyer("start")
 		self.state = "ready"
 		
 	def erreur(self):

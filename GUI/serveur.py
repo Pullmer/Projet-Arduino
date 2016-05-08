@@ -24,7 +24,10 @@ class Serveur(threading.Thread):
 			try:
 				self.tcpsock.listen(1)
 				(clientsocket, (ip, port)) = self.tcpsock.accept()   #on accepte la connexion d'un robot
-				newthread = ClientThread(ip, port, clientsocket, self.labyrinthe,self.controller)  #création d'un Thread qui s'occupera de la communication avec le robot
+				clientsocket.settimeout(0.01)
+				semSocket = threading.Semaphore(value=1)
+				ordreDirect = OrdreDirect(clientsocket,semSocket)  #s'occupe des ordres qui ne sont pas des réponses
+				newthread = ClientThread(ip, port, clientsocket, self.labyrinthe,self.controller,semSocket,ordreDirect)  #création d'un Thread qui s'occupera de la communication avec le robot
 				newthread.start()  #on lance le Thread
 			except:
 				pass
