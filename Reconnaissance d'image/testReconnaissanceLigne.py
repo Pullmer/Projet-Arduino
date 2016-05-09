@@ -12,7 +12,7 @@ import cv2
 import libReconnaissanceImage as libRI
 
 resolution = (640, 480) # Résolution caméra
-TCP_IP = '10.12.152.157' # Adresse du serveur
+TCP_IP = '10.0.0.201' # Adresse du serveur
 TCP_PORT = 8123 # Port de communication
 
 #----------------------------------------------------------------------
@@ -93,7 +93,7 @@ def main():
                     cv2.circle(imgHoughCircle, (i[0], i[1]), i[2], (0, 255, 0), 2) # Affichage cercles
                     cv2.circle(imgHoughCircle, (i[0], i[1]), 2, (0, 0, 255), 3) # Affichage centres des cercles
                     color = libRI.getPixelColor(data, (i[0], i[1])) # Affichage couleur pixel
-                    if(i[0] < 320 and color[0] < 220 and color[0] > 134 and color[1] < 160 and color[1] > 110 and color[2] < 80 and color[2] > 35):
+                    if(i[0] > 320 and color[0] < 220 and color[0] > 90 and color[1] < 160 and color[1] > 110 and color[2] < 80 and color[2] > 35):
                         print("Panneau stop bleu detecte !\r\n")
 
             # Affichage des images

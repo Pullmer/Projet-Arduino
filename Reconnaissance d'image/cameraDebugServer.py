@@ -31,7 +31,7 @@ class CameraDebugServer:
             self.conn.send(data)
         except:
             print("Interruption du socket, en attente...")
-            self.__init__(self)
+            CameraDebugServer.__init__(self)
 
     #----------------------------------------------------------------------
     def close(self):

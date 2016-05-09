@@ -38,7 +38,7 @@ class SerialArduino(threading.Thread):
             if a is not None:
                 self.processData(a)
                 
-        print("Thread arduino killed !")        
+        print("Thread arduino killed !")
         
     #----------------------------------------------------------------------
     def checkSerialCom(self):

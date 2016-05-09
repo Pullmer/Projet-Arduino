@@ -24,12 +24,12 @@ def recvall(sock, count):
 
 #----------------------------------------------------------------------
 
-resolution = (1296, 730)
-TCP_IP = '10.12.152.157' # Adresse du serveur
+resolution = (640, 480)
+TCP_IP = '10.0.0.201' # Adresse du serveur
 TCP_PORT = 8123
 
 sock = socket.socket()
-sock.connect((TCP_IP, TCP_PORT)) # ─Ouverture du socket
+sock.connect((TCP_IP, TCP_PORT)) # Ouverture du socket
 cv2.namedWindow('Client')
 
 while(True):

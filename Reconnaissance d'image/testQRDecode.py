@@ -7,13 +7,22 @@
 """
 
 import picamera
+import picamera.array
 import qrCodeDecoder
+import cv2
+import time
 
-camera = picamera.PiCamera()
-camera.resolution = (1920, 1080)
-camera.hflip, camera.vflip = True, True
+with picamera.PiCamera() as camera:
+    camera.hflip, camera.vflip = True, True
+    camera.resolution = (640, 480)
+    time.sleep(1)
+    with picamera.array.PiRGBArray(camera) as stream:
+        camera.capture(stream, format='bgr')
+        stream.truncate(0)
+        image = stream.array # Image capturée
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # Conversion en niveau de gris
+        cv2.imwrite('qrcode.jpg', image)
 
-camera.color_effects = (128,128) # noir et blanc
-
-camera.capture('qrcode.jpg')
+camera.close()
+stream.close()
 print("Message décodé : " + qrCodeDecoder.decode('qrcode.jpg'))
