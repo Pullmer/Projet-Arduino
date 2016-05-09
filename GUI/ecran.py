@@ -5,6 +5,7 @@ from Tkinter import *
 from tkMessageBox import *
 import Queue
 from dessin import *
+from question import *
 
 class Ecran():
 
@@ -19,28 +20,28 @@ class Ecran():
 					for position in carrefours_adjacents:
 						dx = position[0]-position_curseur[0]
 						dy = position[1]-position_curseur[1]
-						if dx == 0 and dy >0:
+						if dx == 0 and dy >0.11:
 							self.dessin.deplacerCurseur(position)
 							break
 				elif touche == "Down":
 					for position in carrefours_adjacents:
 						dx = position[0]-position_curseur[0]
 						dy = position[1]-position_curseur[1]
-						if dx == 0 and dy <0:
+						if dx == 0 and dy <-0.11:
 							self.dessin.deplacerCurseur(position)
 							break
 				elif touche == "Right":
 					for position in carrefours_adjacents:
 						dx = position[0]-position_curseur[0]
 						dy = position[1]-position_curseur[1]
-						if dx > 0 and dy == 0:
+						if dx > 0.11 and dy == 0:
 							self.dessin.deplacerCurseur(position)
 							break
 				elif touche == "Left":
 					for position in carrefours_adjacents:
 						dx = position[0]-position_curseur[0]
 						dy = position[1]-position_curseur[1]
-						if dx < 0 and dy == 0:
+						if dx < -0.11 and dy == 0 and dx!=-0.1:
 							self.dessin.deplacerCurseur(position)
 							break
 		self.controller = controller
@@ -69,6 +70,9 @@ class Ecran():
 		
 	def creerMenu(self,fenetre):
 	
+		def infos():
+			showinfo('A propos','cartographie et exploration de labyrinthe\n'+'developpé par :\n'+'BIDOUNG Katia\n'+'GONÇALVES Nicolas\n'+'MAISON Jonas\n'+'THOMAS Cyprien\n')
+		
 		def details_robot(id):
 			self.controller.details(id)
 			
@@ -81,20 +85,29 @@ class Ecran():
 			else:
 				self.dessin.afficherCurseur()
 			
-		def changer_mode():
-			if askyesno('changement de mode','Voulez vous passer en mode exploration?'):
-				print('oui')
+		def lancer():
+			showinfo('information','lancement du serveur')
+			self.controller.lancerServeur()
+			
+		def go_pause():
+			question = Pause(self.fenetre, self.controller)
+			
+		def quitter():
+			if self.controller.connexionsEtablies():
+				showinfo('erreur', 'Des connexions sont toujours présentes')
 			else:
-				print('non')
+				self.controller.quitter()
+				fenetre.destroy()
 		
 		menubar = Menu(fenetre)
 		
 		menu1 = Menu(menubar, tearoff=0)
 		menu1.add_command(label="Commencer", command=alert)
-		menu1.add_command(label="Mode", command=changer_mode)
+		menu1.add_command(label="Lancer", command=lancer)
+		menu1.add_command(label="Partir/Arreter", command=go_pause)
 		menu1.add_command(label="Curseur", command=curseur)
 		menu1.add_separator()
-		menu1.add_command(label="Quitter", command=fenetre.quit)
+		menu1.add_command(label="Quitter", command=quitter)
 		menubar.add_cascade(label="Fichier", menu=menu1)
 
 		menu2 = Menu(menubar, tearoff=0)
@@ -104,7 +117,7 @@ class Ecran():
 		menubar.add_cascade(label="Robot", menu=menu2)
 
 		menu3 = Menu(menubar, tearoff=0)
-		menu3.add_command(label="A propos", command=alert)
+		menu3.add_command(label="A propos", command=infos)
 		menubar.add_cascade(label="Aide", menu=menu3)
 
 		fenetre.config(menu=menubar)
@@ -115,19 +128,34 @@ class Ecran():
 		Label(l, text="Robot 1:\nPosition : (X,Y)\nBatterie : 95%\n\nRobot 2:\nPosition : (X,Y)\nBatterie : 95%\n\nRobot 3:\nPosition : (X,Y)\nBatterie : 95%\n\n").pack()
 		
 	def creerBoutons(self,frame):
-	
-		def lancer():
-			showinfo('information','lancement du serveur')
-			self.controller.lancerServeur()
 			
 		def pause():
 			self.controller.pause()
 			
-		bouton_start=Button(frame, text="Lancer", command=lancer)
-		bouton_start.pack(side=BOTTOM, padx=10, pady=10)
+		def go():
+			if self.dessin.curseurUtilise():
+				position = self.dessin.getPositionCurseur()
+				question = Question(self.fenetre, self.controller, position)
+			else:
+				showinfo('erreur', 'Le curseur n\'est pas utilisé !')
+				
+		def voir():
+			if self.dessin.curseurUtilise():
+				position = self.dessin.getPositionCurseur()
+				texte = self.controller.voirInfosIntersection(position)
+				showinfo('intersection',texte)
+			else:
+				showinfo('erreur', 'Le curseur n\'est pas utilisé !')
 		
 		bouton_pause=Button(frame, text="Pause", command=pause)
 		bouton_pause.pack(side=BOTTOM, padx=10, pady=10)
+		
+		bouton_go=Button(frame, text="Aller à", command=go)
+		bouton_go.pack(side=BOTTOM, padx=10, pady=10)
+		
+		bouton_voir=Button(frame, text="Voir", command=voir)
+		bouton_voir.pack(side=BOTTOM, padx=10, pady=10)
+		
 	def rafraichirEcran(self):
 		while self.queue.qsize():
 				try:
@@ -157,8 +185,14 @@ class Ecran():
 							showinfo('details du robot '+str(id),text)
 							
 					if msg == "nouveau robot":
-						self.dessin.creerPoint()
+						id = self.queue.get(0)
+						self.dessin.creerPoint(id)
 						showinfo('connexion','Un robot vient de se connecter')
+						
+					if msg == "deconnexion":
+						id = self.queue.get(0)
+						self.dessin.effacerPoint(id)
+						showinfo('deconnexion','Le robot ' + str(id) + ' vient de se deconnecter')
 				except Queue.Empty:
 					pass	
 					

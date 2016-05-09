@@ -2,8 +2,9 @@
 
 class Robot:
 
-	def __init__(self,socket,ip, port,labyrinthe,controller):
+	def __init__(self,socket,ip, port,labyrinthe,controller,ordreDirect):
 			self.socket = socket   #référence vers le thread de communication
+			self.ordreDirect = ordreDirect
 			self.ip = ip   #adresse ip du robot
 			self.port = port   #port de communication
 			self.bat_level = 100   #niveau de batterie
@@ -11,6 +12,9 @@ class Robot:
 			self.position = (0,0)       #position du robot
 			self.intersection = ("NON","OUI","NON")   #forme de la dernière intersection parcourue
 			self.ancienne_position = (0,0)   #ancienne position du robot
+			self.mode = "exploration"
+			self.state = "ready"
+			self.trajet = []
 			self.labyrinthe = labyrinthe     #reference vers le labyrinthe
 			self.controller = controller     #reference vers le controleur
 			controller.ajouterRobot(self)    #ajout à la liste des robots connus du controleur
@@ -21,7 +25,7 @@ class Robot:
 		l = recu.split("\n")
 		
 		#action à faire si c'est une demande de direction
-		if l[0] == "DIRECTION?":
+		if l[0] == "DIRECTION?" and self.mode == "exploration":
 			#on récupère la position
 			X = float(l[1].split(" : ")[1])
 			Y = float(l[2].split(" : ")[1])
@@ -46,7 +50,35 @@ class Robot:
 			self.controller.dessinerCheminParcouru(self,self.ancienne_position,self.position)   #on demande de tracer le chemin qui a été parcouru
 			self.labyrinthe.demandeDirection(self)   #demande de direction au labyrinthe
 			
-	#méthode qui demande l'envoi d'un ordre au robot
+		elif l[0] == "DIRECTION?" and self.mode == "navigation":
+			if len(self.trajet)>0:
+				#on récupère la position
+				X = float(l[1].split(" : ")[1])
+				Y = float(l[2].split(" : ")[1])
+				self.ancienne_position = self.position
+				self.position = (X,Y)
+				
+				ancienne = self.labyrinthe.rechercheNoeud(self.ancienne)
+				depart = self.labyrinthe.rechercheNoeud(self.position)
+				arrivee = self.trajet[-1]
+				
+				if self.labyrinthe.rechercheNoeud(self.position) != self.trajet[0]:
+					self.trajet = self.labyrinthe.dijsktra(depart,arrivee)
+					direction = self.labyrinthe.calculDirection(ancienne,depart,arrivee)
+				else :
+					direction = self.labyrinthe.calculDirection(ancienne,depart,arrivee)
+					self.trajet.remove(0)
+				self.donnerOrdre(direction)
+			else:
+				self.donnerOrdre("workcompleted")
+				self.state = "ready"
+			
+		elif l[0] == "CLOSE_CONNEXION":
+			self.socket.fermer()
+			self.controller.deconnexion(self)
+			
+			
+	#méthode qui demande l'envoi d'un ordre (une réponse) au robot
 	def donnerOrdre(self,ordre):
 		self.socket.envoyer(ordre)
 		
@@ -80,4 +112,25 @@ class Robot:
 		
 	#méthode qui demande l'arret du robot
 	def stop(self):
-		self.donnerOrdre("stop")
+		self.ordreDirect.envoyer("pause")
+		self.state = "pause"
+		
+	def go(self):
+		self.ordreDirect.envoyer("start")
+		self.state = "ready"
+		
+	def erreur(self):
+		try:
+			self.socket.fermer()
+		except:
+			print("erreur")
+		self.controller.deconnexion(self)
+		
+	def naviguer(self, destination):
+		self.mode = "navigation"
+		depart = self.labyrinthe.rechercheNoeud(self.position)
+		arrivee = self.labyrinthe.rechercheNoeud(destination)
+		self.trajet = self.labyrinthe.dijsktra(depart, arrivee)
+		
+	def getState(self):
+		return self.state

@@ -225,3 +225,47 @@ class Labyrinthe:
 			for i in adjacents:
 				liste.append(self.labyrinthe.node[i]['coords'])
 		return liste
+		
+	def analyserIntersection(self,coords):
+		carrefour = self.rechercheNoeud(coords)
+		liste = []
+		non_explore = 0
+		if carrefour != -1:
+			adjacents = self.labyrinthe.neighbors(carrefour)
+			for noeud in adjacents:
+				if self.labyrinthe[carrefour][noeud] == 0:
+					non_explore = non_explore + 1
+		taille = len(adjacents)
+		return (taille,non_explore)
+		
+	def calculDirection(self, ancienne, depart, arrivee):
+		coord1 = self.labyrinthe.node[ancienne]['coords']
+		coord2 = self.labyrinthe.node[depart]['coords']
+		coord3 = self.labyrinthe.node[arrivee]['coords']
+		
+		Dx = coord2[0]-coord1[0]
+		Dy = coord2[1]-coord1[1]
+		
+		dx = coord3[0]-coord2[0]
+		dy = coord3[1]-coord2[1]
+		
+		if Dx==0 and dx==0:
+			if Dy*dy>0:
+				return "tout droit"
+			else:
+				return "demi-tour"
+		if Dy==0 and dy==0:
+			if Dx*dx>0:
+				return "tout droit"
+			else:
+				return "demi-tour"
+		if Dx==0:
+			if Dy*dx>0:
+				return "droite"
+			else:
+				return "gauche"
+		if Dy==0:
+			if Dx*dy>0:
+				return "gauche"
+			else:
+				return "droite"
