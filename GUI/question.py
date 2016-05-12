@@ -4,16 +4,19 @@ import Tkinter
 from Tkinter import *
 from tkMessageBox import *
 
+# classe de la fenêtre d'affichage de la selection du robot qui doit se déplacer à un endroit sélectionné
 class Question(Tkinter.Toplevel):
 	
+	# constructeur de classe
 	def __init__(self,fenetre,controller,destination):
 		Tkinter.Toplevel.__init__(self,fenetre)
-		self.controller = controller
-		self.destination = destination
+		self.controller = controller    # référence vers le controleur
+		self.destination = destination    # coordonnées de l'intersection cible
 		
 		self.grab_set()
 		self.focus_set()
 		
+		# envoi de la destination cible au robot selectionné au clic sur le bouton correspondant
 		def robot(id):
 			if self.controller.isConnected(id):
 				if self.controller.getEtatRobot(id) == "ready":
@@ -25,6 +28,7 @@ class Question(Tkinter.Toplevel):
 			self.destroy()
 			
 		
+		# création des boutons
 		bouton1=Button(self, text="Lancer robot 1", command = lambda : robot(1))
 		bouton1.pack(padx=10, pady=10)
 		bouton2=Button(self, text="Lancer robot 2", command= lambda : robot(2))
@@ -33,15 +37,19 @@ class Question(Tkinter.Toplevel):
 		bouton3.pack(padx=10, pady=10)
 		
 		
+
+# classe de la fenêtre d'affichage de la selection du robot à lancer/mettre en pause
 class Pause(Tkinter.Toplevel):
-	
+
+	# constructeur de classe
 	def __init__(self,fenetre,controller):
 		Tkinter.Toplevel.__init__(self,fenetre)
-		self.controller = controller
+		self.controller = controller    # référence vers le controleur
 		
 		self.grab_set()
 		self.focus_set()
 		
+		# envoi de l'ordre de lancement au robot sélectionné par clic sur le bouton correspondant
 		def lancer_robot(id):
 			if self.controller.isConnected(id):
 				if self.controller.getEtatRobot(id) == "working":
@@ -51,6 +59,7 @@ class Pause(Tkinter.Toplevel):
 			else :
 				showinfo('erreur', "Ce robot n'est pas connecté")
 			
+		# envoi de l'ordre de mise en pause au robot sélectionné par clic sur le bouton correspondant
 		def pause_robot(id):
 			if self.controller.isConnected(id):
 				if self.controller.getEtatRobot(id) == "pause":
@@ -72,6 +81,8 @@ class Pause(Tkinter.Toplevel):
 		zone3 = Frame(self, borderwidth=2, relief=GROOVE)
 		zone3.pack(side=BOTTOM, padx=30, pady=30)
 		
+		
+		# construction des boutons
 		bouton1=Button(zone1, text="Lancer robot 1", command = lambda : lancer_robot(1))
 		bouton1.pack(padx=10, pady=10)
 		bouton2=Button(zone1, text="Lancer robot 2", command= lambda : lancer_robot(2))

@@ -9,9 +9,9 @@ from robot import *
 class ClientThread(threading.Thread):
 
 	def __init__(self, ip, port, clientsocket, labyrinthe,controller,semSocket,ordreDirect):
-		threading.Thread.__init__(self)    #on appelle le constructeur de la classe Thread
-		self.clientsocket = clientsocket   #socket de communication avec un robot
-		self.semaphoreSocket = semSocket
+		threading.Thread.__init__(self)    # on appelle le constructeur de la classe Thread
+		self.clientsocket = clientsocket   # socket de communication avec un robot
+		self.semaphoreSocket = semSocket   # référence vers le semaphore de protection du socket de communication
 		self.deconnexion = False
 		self.robot = Robot(self,ip, port,labyrinthe,controller,ordreDirect)   # on instancie un objet de la classe robot
 		

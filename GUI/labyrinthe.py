@@ -226,6 +226,7 @@ class Labyrinthe:
 				liste.append(self.labyrinthe.node[i]['coords'])
 		return liste
 		
+	# retourne le nombre de chemins d'une intersection, et le nombre de chemins non explorés
 	def analyserIntersection(self,coords):
 		carrefour = self.rechercheNoeud(coords)
 		liste = []
@@ -238,6 +239,7 @@ class Labyrinthe:
 		taille = len(adjacents)
 		return (taille,non_explore)
 		
+	# retourne la direction (gauche,droite,etc...) à suivre à partir de l'ancienne, de l'actuelle et de la future intersection explorée par le robot
 	def calculDirection(self, ancienne, depart, arrivee):
 		coord1 = self.labyrinthe.node[ancienne]['coords']
 		coord2 = self.labyrinthe.node[depart]['coords']

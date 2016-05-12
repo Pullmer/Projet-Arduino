@@ -115,6 +115,7 @@ class Robot:
 		self.ordreDirect.envoyer("pause")
 		self.state = "pause"
 		
+	# on demande le départ du robot
 	def go(self):
 		self.ordreDirect.envoyer("start")
 		self.state = "ready"
@@ -126,11 +127,13 @@ class Robot:
 			print("erreur")
 		self.controller.deconnexion(self)
 		
+	# passe le robot en mode navigation vers une destination donnée
 	def naviguer(self, destination):
 		self.mode = "navigation"
 		depart = self.labyrinthe.rechercheNoeud(self.position)
 		arrivee = self.labyrinthe.rechercheNoeud(destination)
 		self.trajet = self.labyrinthe.dijsktra(depart, arrivee)
 		
+	# retourne l'état du robot
 	def getState(self):
 		return self.state

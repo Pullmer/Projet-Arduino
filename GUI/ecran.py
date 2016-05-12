@@ -7,10 +7,13 @@ import Queue
 from dessin import *
 from question import *
 
+# classe contenant les composants de la fenêtre principale
 class Ecran():
 
+	# constructeur de classe
 	def __init__(self, controller,fenetre,queue):
 	
+		# action à réaliser quand on appuie sur les flèches clavier (déplacement du curseur)
 		def clavier(event):
 			touche = event.keysym
 			if self.dessin.curseurUtilise():
@@ -44,9 +47,9 @@ class Ecran():
 						if dx < -0.11 and dy == 0 and dx!=-0.1:
 							self.dessin.deplacerCurseur(position)
 							break
-		self.controller = controller
-		self.fenetre = fenetre
-		self.queue = queue
+		self.controller = controller    # référence cers le controleur
+		self.fenetre = fenetre          # référence vers la fenêtre du programme
+		self.queue = queue              # référence vers la file d'attente
 		
 		# frame 1
 		zone1 = Frame(fenetre, borderwidth=2, relief=GROOVE)
@@ -57,41 +60,49 @@ class Ecran():
 		zone2.pack(side=LEFT, padx=30, pady=30)
 		
 		
-		self.creerMenu(fenetre)
-		self.afficherInformations(zone2)
-		self.creerBoutons(zone2)
-		self.dessin = Dessin(zone1,400,400,'yellow')
+		self.creerMenu(fenetre)   # création de la barre des menus
+		self.afficherInformations(zone2)   # création de la zone d'affichage de texte
+		self.creerBoutons(zone2)   # création des boutons
+		self.dessin = Dessin(zone1,400,400,'yellow')   #création de la zone de dessin du labyrinthe
 		self.dessin.focus_set()
-		self.dessin.bind("<Key>", clavier)
-		self.dessin.pack()
+		self.dessin.bind("<Key>", clavier)   # on active les évènements clavier
+		self.dessin.pack()   # on affiche la zone de dessin
 	
+	# méthode qui demande le tracé d'une ligne dans la zone de dessin
 	def dessinerLigne(self,coord1,coord2):
 		self.dessin.creerLigne(coord1,coord2,4)
 		
+	# méthode de création de la barre de menus et actions associées
 	def creerMenu(self,fenetre):
 	
+		# message à afficher quand on clique sur "A propos"
 		def infos():
 			showinfo('A propos','cartographie et exploration de labyrinthe\n'+'developpé par :\n'+'BIDOUNG Katia\n'+'GONÇALVES Nicolas\n'+'MAISON Jonas\n'+'THOMAS Cyprien\n')
+		
+		
+		def alert():
+			pass
 		
 		def details_robot(id):
 			self.controller.details(id)
 			
-		def alert():
-			self.fenetre.quit()
-			
+		# (dés)activation du curseur au clic sur "Curseur"	
 		def curseur():
 			if(self.dessin.curseurUtilise()):
 				self.dessin.effacerCurseur()
 			else:
 				self.dessin.afficherCurseur()
 			
+		# demande de lancement du serveur au clic sur "Lancer"
 		def lancer():
 			showinfo('information','lancement du serveur')
 			self.controller.lancerServeur()
 			
+		# création d'une fenêtre secondaire pour démarrer/mettre en pause un robot au clic sur "Partir/Arreter"
 		def go_pause():
 			question = Pause(self.fenetre, self.controller)
 			
+		# action à effectuer au clic sur "Quitter"
 		def quitter():
 			if self.controller.connexionsEtablies():
 				showinfo('erreur', 'Des connexions sont toujours présentes')
@@ -99,6 +110,8 @@ class Ecran():
 				self.controller.quitter()
 				fenetre.destroy()
 		
+		
+		# création des menus déroulants
 		menubar = Menu(fenetre)
 		
 		menu1 = Menu(menubar, tearoff=0)
@@ -122,23 +135,24 @@ class Ecran():
 
 		fenetre.config(menu=menubar)
 		
+	# création de la zone d'affichage de texte
 	def afficherInformations(self,frame):
 		l = LabelFrame(frame, text="Informations", padx=20, pady=20)
 		l.pack(side = TOP,fill="both", expand="yes")
 		Label(l, text="Robot 1:\nPosition : (X,Y)\nBatterie : 95%\n\nRobot 2:\nPosition : (X,Y)\nBatterie : 95%\n\nRobot 3:\nPosition : (X,Y)\nBatterie : 95%\n\n").pack()
 		
+	# création des boutons et des actions associées
 	def creerBoutons(self,frame):
 			
-		def pause():
-			self.controller.pause()
-			
+		# envoi d'une demande de destination au clic sur "Aller à"
 		def go():
 			if self.dessin.curseurUtilise():
 				position = self.dessin.getPositionCurseur()
-				question = Question(self.fenetre, self.controller, position)
+				question = Question(self.fenetre, self.controller, position)    # fenêtre secondaire permettant de sélectionner le robot
 			else:
 				showinfo('erreur', 'Le curseur n\'est pas utilisé !')
 				
+		# on affiche un message contenant les informations de l'intersection pointée par le curseur au clic dur "Voir"
 		def voir():
 			if self.dessin.curseurUtilise():
 				position = self.dessin.getPositionCurseur()
@@ -147,16 +161,17 @@ class Ecran():
 			else:
 				showinfo('erreur', 'Le curseur n\'est pas utilisé !')
 		
-		bouton_pause=Button(frame, text="Pause", command=pause)
-		bouton_pause.pack(side=BOTTOM, padx=10, pady=10)
-		
+		# création des boutons
 		bouton_go=Button(frame, text="Aller à", command=go)
 		bouton_go.pack(side=BOTTOM, padx=10, pady=10)
 		
 		bouton_voir=Button(frame, text="Voir", command=voir)
 		bouton_voir.pack(side=BOTTOM, padx=10, pady=10)
 		
+	
+	# méthode de raffraichissment de l'écran (toutes les 50 ms)
 	def rafraichirEcran(self):
+		# on consulte les éléments de la file d'attente et on effectue les actions d'affichages correspondantes
 		while self.queue.qsize():
 				try:
 					msg = self.queue.get(0)
