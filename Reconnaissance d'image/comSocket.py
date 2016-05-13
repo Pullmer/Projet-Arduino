@@ -2,7 +2,7 @@
 #coding:utf-8
 """
   Author:  Jonas
-  Purpose: Librairie pour la communication socket
+  Purpose: Librairie pour la communication socket sur la RaspberryPi
   Created: 23/04/2016
 """
 
@@ -17,17 +17,17 @@ class Com(threading.Thread):
     def __init__(self, host, port):
         """Constructor"""
         threading.Thread.__init__(self) # Initialisation du thread
-        self.kill_received = False
+        self.kill_received = False # Destruction du thread
         self.instanceArduino = None # Instance communication arduino
         self.ip = host
         self.port = port
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((host, port))
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Définition du socket
+        self.sock.connect((host, port)) # Connexion au socket
         print("Socket connected to " + host + ":" + str(port))
     
     #----------------------------------------------------------------------
     def setInstanceArduino(self, a):
-        """"""
+        """Permet l'envoi des messages à l'Arduino via le port série"""
         self.instanceArduino = a
         
     #----------------------------------------------------------------------
@@ -44,10 +44,10 @@ class Com(threading.Thread):
     def Read(self):
         """Fonction qui reçoit les données venant du pc"""
         try:
-            r = self.sock.recv(2048)
+            r = self.sock.recv(2048) # Attente réception données venant du socket
             return r
         except:
-            print("Erreur lecture socket !")
+            print("Erreur lecture socket !") # Problème de liaison, fermeture du socket
             self.kill_received = True
             self.instanceArduino.kill_received = True
     
@@ -56,7 +56,7 @@ class Com(threading.Thread):
         """Fonction qui envoie les données vers le pc"""
         try:
             if len(data) > 0 and data is not None:
-                self.sock.send(data)
+                self.sock.send(data) # Envoi des données
         except:
             print("Erreur transmission socket !")
             self.kill_received = True
@@ -64,10 +64,11 @@ class Com(threading.Thread):
     
     #----------------------------------------------------------------------
     def processData(self, r):
-        """Fonction traitement données venant du pc"""
+        """Fonction traitement données venant du pc via le socket"""
         if len(r) > 0:
             print("Reception donnees venant du socket : " + str(r))
             
+			# Les commandes préalablements définies sont traitées ici
             data = r.split('#')
             for i in data:
                 if "bat_level" in i:
@@ -89,7 +90,7 @@ class Com(threading.Thread):
         
     #----------------------------------------------------------------------
     def close(self):
-        """"""
+        """Fermeture du socket"""
         self.sock.close()
         print("Socket " + self.ip + ":" + str(self.port) + " closed")
         

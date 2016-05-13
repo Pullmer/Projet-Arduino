@@ -2,7 +2,7 @@
 #coding:utf-8
 """
   Author:  Jonas
-  Purpose: Serveur pour envoyer le flux vidéo sur le réseau
+  Purpose: Serveur pour envoyer le flux vidéo de la caméra sur le réseau
   Created: 15/02/2016
 """
 
@@ -16,11 +16,11 @@ class CameraDebugServer:
     def __init__(self, port = 8123):
         """Constructor"""
         self.TCP_PORT = port
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Création du socket
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.s.bind(('', port))
         self.s.listen(True)
-        self.conn, self.addr = self.s.accept()
+        self.conn, self.addr = self.s.accept() # Connexion du client
         print("Socket ouvert")
 
     #----------------------------------------------------------------------
@@ -35,7 +35,7 @@ class CameraDebugServer:
 
     #----------------------------------------------------------------------
     def close(self):
-        """Lorsque la classe se ferme on close le socket"""
+        """Lorsque la classe se ferme on ferme le socket"""
         self.s.close()
         print("Socket closed")
         

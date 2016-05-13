@@ -2,7 +2,7 @@
 #coding:utf-8
 """
   Author:  Jonas
-  Purpose: Bibliothèque fonction communication serial
+  Purpose: Bibliothèque fonction communication serial avec la carte Arduino
   Created: 13/03/2016
 """
 
@@ -18,7 +18,7 @@ class SerialArduino(threading.Thread):
     def __init__(self):
         """Constructor"""
         threading.Thread.__init__(self) # Initialisation du thread
-        self.kill_received = False
+        self.kill_received = False # Destruction du thread
         self.instanceSock = None # Instance communication socket
         self.serialArduino = serial.Serial('/dev/ttyACM0', 115200) # Ouverture port série
         self.serialArduino.flushInput() # Vide le port série
@@ -27,14 +27,14 @@ class SerialArduino(threading.Thread):
     
     #----------------------------------------------------------------------
     def setInstanceSocket(self, s):
-        """Lien vers l'instance du socket"""
+        """Lien vers l'instance du socket pour envoyer des données vers le PC"""
         self.instanceSock = s
     
     #----------------------------------------------------------------------
     def run(self):
         """Boucle thread"""
         while not self.kill_received:
-            a = self.Read()
+            a = self.Read() # Lecture des données venant de l'Arduino
             if a is not None:
                 self.processData(a)
                 
@@ -55,9 +55,9 @@ class SerialArduino(threading.Thread):
         """Envoie data sur le port série de l'arduino"""
         try:
             if len(data) > 0 and data is not None:
-                self.serialArduino.write(data)
+                self.serialArduino.write(data) # Ecriture des données sur le port série
         except:
-            print("Erreur transmission serie !")
+            print("Erreur transmission serie !") # Fermeture du thread en cas d'erreur
             self.kill_received = True
             self.instanceSock.kill_received = True
     
@@ -67,7 +67,7 @@ class SerialArduino(threading.Thread):
         try:
             return self.serialArduino.read(self.serialArduino.inWaiting()) if(self.serialArduino.inWaiting() > 0) else ""
         except:
-            print("Erreur lecture port serie !")
+            print("Erreur lecture port serie !") # Fermture du thread en cas d'erreur
             self.kill_received = True
             self.instanceSock.kill_received = True
 
@@ -77,6 +77,7 @@ class SerialArduino(threading.Thread):
         if len(r) > 0:
             print("Reception donnees venant de l'arduino : " + str(r))
             
+			# Les commandes préalablements définies sont traitées ici
             data = r.split('#')
             for i in data:
                 if "bat_level" in i:
@@ -92,7 +93,7 @@ class SerialArduino(threading.Thread):
         
     #----------------------------------------------------------------------
     def close(self):
-        """"""
+        """Fermture du port série"""
         self.serialArduino.close()
         print("Serial port closed")
         

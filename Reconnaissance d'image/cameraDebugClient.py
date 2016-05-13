@@ -36,7 +36,7 @@ while(True):
     length = recvall(sock, 16)
     
     if(length):
-        stringData = recvall(sock, int(length))
+        stringData = recvall(sock, int(length)) # Réception des données
         data = numpy.fromstring(stringData, dtype='uint8').reshape(resolution[1], resolution[0], -1)
         cv2.imshow('Client', data) # Affichage de l'image via OpenCV   
 

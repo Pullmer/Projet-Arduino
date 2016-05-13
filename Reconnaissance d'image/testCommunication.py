@@ -2,7 +2,7 @@
 #coding:utf-8
 """
   Author:  Jonas
-  Purpose: Test unitaire communication socket (client)
+  Purpose: Test unitaire communication entre Arduino et PC
   Created: 23/04/2016
 """
 
@@ -28,7 +28,7 @@ def main():
             pass # Boucle infinie pour tester le fonctionnement des threads...
             
     except Exception as e:
-        print(str(e))
+        print(str(e)) # Si il y a interruption de la communication on ferme le port série et le socket
         sock.kill_received = True
         ardu.kill_received = True
         

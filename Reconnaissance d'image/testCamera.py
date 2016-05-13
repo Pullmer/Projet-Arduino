@@ -2,7 +2,7 @@
 #coding:utf-8
 """
   Author:  Jonas
-  Purpose: Serveur streaming caméra via le réseau
+  Purpose: Test unitaire streaming caméra, code à lancer sur la Raspberry Pi
   Created: 16/02/2016
 """
 
@@ -23,7 +23,7 @@ try:
     while True:
         with picamera.array.PiRGBArray(camera) as stream:
             camera.capture(stream, format='bgr') # Prise d'une image
-            image = stream.array.tostring()
+            image = stream.array.tostring() # Conversion en string
             serveur.sendData(image) # Envoi de l'image sur le réseau
             
 except Exception as e:
