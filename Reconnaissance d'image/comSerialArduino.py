@@ -13,7 +13,7 @@ import threading
 ########################################################################
 class SerialArduino(threading.Thread):
     """Classe qui gère la com Serial Arduino, hérite de thread"""
-    
+
     #----------------------------------------------------------------------
     def __init__(self):
         """Constructor"""
@@ -24,32 +24,32 @@ class SerialArduino(threading.Thread):
         self.serialArduino.flushInput() # Vide le port série
         self.checkSerialCom() # Vérification de la communication
         print("Connected to arduino")
-    
+
     #----------------------------------------------------------------------
     def setInstanceSocket(self, s):
         """Lien vers l'instance du socket pour envoyer des données vers le PC"""
         self.instanceSock = s
-    
+
     #----------------------------------------------------------------------
     def run(self):
         """Boucle thread"""
         while not self.kill_received:
             a = self.Read() # Lecture des données venant de l'Arduino
-            if a is not None:
+            if a is not "":
                 self.processData(a)
-                
+
         print("Thread arduino killed !")
-        
+
     #----------------------------------------------------------------------
     def checkSerialCom(self):
         """Teste la communication serial"""
         while("pong" not in self.Read()): # Attente d'une réponse de l'aduino
-                self.Send("#ping;")
-                print("Ping sent...")
-                time.sleep(0.2)
-                
+            self.Send("#ping;")
+            print("Ping sent...")
+            time.sleep(0.2)
+
         print("Received pong !")
-        
+
     #----------------------------------------------------------------------
     def Send(self, data):
         """Envoie data sur le port série de l'arduino"""
@@ -60,7 +60,7 @@ class SerialArduino(threading.Thread):
             print("Erreur transmission serie !") # Fermeture du thread en cas d'erreur
             self.kill_received = True
             self.instanceSock.kill_received = True
-    
+
     #----------------------------------------------------------------------
     def Read(self):
         """Lit données venant de l'arduino"""
@@ -76,8 +76,8 @@ class SerialArduino(threading.Thread):
         """Fonction traitement des données venant de l'arduino"""
         if len(r) > 0:
             print("Reception donnees venant de l'arduino : " + str(r))
-            
-			# Les commandes préalablements définies sont traitées ici
+
+            # Les commandes préalablements définies sont traitées ici
             data = r.split('#')
             for i in data:
                 if "bat_level" in i:
@@ -90,10 +90,9 @@ class SerialArduino(threading.Thread):
                     self.instanceSock.Send("OBSTACLE_LEFT")
                 elif "pong" in i:
                     self.instanceSock.Send("PONG")
-        
+
     #----------------------------------------------------------------------
     def close(self):
-        """Fermture du port série"""
+        """Fermeture du port série"""
         self.serialArduino.close()
         print("Serial port closed")
-        

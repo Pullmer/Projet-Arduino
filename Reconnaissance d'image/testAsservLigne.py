@@ -21,13 +21,6 @@ camera.video_stabilization = True # Default : false
 camera.hflip, camera.vflip = True, True
 stream = picamera.array.PiRGBArray(camera)
 
-# Réglage PID
-arduino.Send("#kp;0;#kd;0;#ki;0;#askPIDParameters;")
-arduino.waitMsg(timeout=10)
-a = arduino.Read()
-if len(a) > 0:
-    print(a)
-
 #----------------------------------------------------------------------
 def main():
     """Programme principal"""

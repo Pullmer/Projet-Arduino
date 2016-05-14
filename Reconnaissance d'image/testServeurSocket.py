@@ -1,29 +1,55 @@
 #!/usr/bin/env python
 #coding:utf-8
 """
-  Author:  Jonas
   Purpose: Test unitaire communication socket (serveur)
-  Created: 23/04/2016
 """
 
 import socket
+import sys
+from thread import *
 
 HOST = ''   
 PORT = 1111
 
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+print 'Socket created'
+
 try:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((HOST, PORT))
-    s.listen(True)
-    conn, addr = s.accept()
-    print("Socket ouvert : " + str(addr))
+except socket.error , msg:
+    print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+    sys.exit()
+
+print 'Socket bind complete'
+
+s.listen(True)
+print 'Socket now listening'
+
+def clientthread(conn):
+    #Sending message to connected client
+
+    #infinite loop so that function do not terminate and thread do not end.
     while True:
-        a = raw_input("Entrez un msg : ")
+
+        #Receiving from client
+        data = conn.recv(1024)
+        print data
+        if not data:
+            break
+
+    conn.close()
+
+#now keep talking with the client
+while 1:
+    #wait to accept a connection
+    conn, addr = s.accept()
+    print 'Connected with ' + addr[0] + ':' + str(addr[1])
+
+    #start new thread
+    start_new_thread(clientthread ,(conn,))
+    while 1:
+        
+        a = raw_input("entrez un msg : ")
         conn.send(a)
-        print(conn.recv(1024))
 
-except Exception as e:
-    print(str(e))
-
-finally:
-    s.close()
+s.close()

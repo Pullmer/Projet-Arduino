@@ -15,7 +15,6 @@ port = 1111
 #----------------------------------------------------------------------
 def main():
     """Main function"""
-    
     try:
         sock = comSocket.Com(host, port) # Instance communication socket
         ardu = comSerialArduino.SerialArduino() # Instance communcation serial
@@ -26,12 +25,12 @@ def main():
 
         while not sock.kill_received and not ardu.kill_received:
             pass # Boucle infinie pour tester le fonctionnement des threads...
-            
+
     except Exception as e:
         print(str(e)) # Si il y a interruption de la communication on ferme le port série et le socket
         sock.kill_received = True
         ardu.kill_received = True
-        
+
     finally:
         sock.join()
         ardu.join()

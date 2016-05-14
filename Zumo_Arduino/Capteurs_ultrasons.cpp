@@ -22,11 +22,11 @@ void alerteObstacle()
    {
     Serial.println("#obstacledetected;");
     blocked = true;
-    set_vitesse_mot(0); // stop moteurs
+    set_vitesse_mot(0, true); // stop moteurs
    }
    else if(!obstacle() && blocked) // il n'y a plus d'obstacle
    {
-    //run_previous_state_mot();
+    run_previous_state_mot();
     blocked = false;
     Serial.println("#obstacleleft;");
    }

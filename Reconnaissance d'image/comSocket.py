@@ -24,12 +24,12 @@ class Com(threading.Thread):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Définition du socket
         self.sock.connect((host, port)) # Connexion au socket
         print("Socket connected to " + host + ":" + str(port))
-    
+
     #----------------------------------------------------------------------
     def setInstanceArduino(self, a):
         """Permet l'envoi des messages à l'Arduino via le port série"""
         self.instanceArduino = a
-        
+
     #----------------------------------------------------------------------
     def run(self):
         """Code exécuté par le thread"""
@@ -37,9 +37,9 @@ class Com(threading.Thread):
             r = self.Read()
             if r is not None:
                 self.processData(r)
-                
+
         print("Thread socket killed !")
-    
+
     #----------------------------------------------------------------------
     def Read(self):
         """Fonction qui reçoit les données venant du pc"""
@@ -50,47 +50,27 @@ class Com(threading.Thread):
             print("Erreur lecture socket !") # Problème de liaison, fermeture du socket
             self.kill_received = True
             self.instanceArduino.kill_received = True
-    
+
     #----------------------------------------------------------------------
     def Send(self, data):
         """Fonction qui envoie les données vers le pc"""
         try:
             if len(data) > 0 and data is not None:
-                self.sock.send(data) # Envoi des données
+                self.sock.send(data)
         except:
             print("Erreur transmission socket !")
             self.kill_received = True
             self.instanceArduino.kill_received = True
-    
+
     #----------------------------------------------------------------------
     def processData(self, r):
         """Fonction traitement données venant du pc via le socket"""
         if len(r) > 0:
             print("Reception donnees venant du socket : " + str(r))
-            
-			# Les commandes préalablements définies sont traitées ici
-            data = r.split('#')
-            for i in data:
-                if "bat_level" in i:
-                    self.instanceArduino.Send("#bat_level;")
-                elif "pause" in i:
-                    self.instanceArduino.Send("#pause;")
-                elif "ping" in i:
-                    self.instanceArduino.Send("#ping;")
-                elif "droite" in i:
-                    self.instanceArduino.Send("#droite;")
-                elif "gauche" in i:
-                    self.instanceArduino.Send("#gauche;")
-                elif "face" in i:
-                    self.instanceArduino.Send("#face;")
-                elif "demi" in i:
-                    self.instanceArduino.Send("#turnback;")
-                elif "workcompleted" in i:
-                    self.instanceArduino.Send("#finish;")
-        
+            self.instanceArduino.Send(str(r))
+
     #----------------------------------------------------------------------
     def close(self):
         """Fermeture du socket"""
         self.sock.close()
         print("Socket " + self.ip + ":" + str(self.port) + " closed")
-        
