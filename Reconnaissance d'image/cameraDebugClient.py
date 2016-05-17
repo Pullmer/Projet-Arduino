@@ -44,4 +44,4 @@ while(True):
         break
 
 sock.close()
-cv2.destroyAllWindows() 
+cv2.destroyAllWindows()
