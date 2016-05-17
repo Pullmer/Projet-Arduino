@@ -10,7 +10,7 @@ import comSerialArduino
 import comSocket
 
 host = '10.0.0.7'
-port = 1111
+port = 1115
 
 
 #----------------------------------------------------------------------
@@ -30,7 +30,7 @@ def main():
                 sock.start() # Démarrage thread
                 print 'Démarrage du thread de communication socket'
                 ardu.start() # Démarrage thread
-                print 'Démarrage du thread de communication socket'
+                print 'Démarrage du thread de communication arduino'
                 
                 while not sock.kill_received and not ardu.kill_received:
                         pass # Boucle infinie pour tester le fonctionnement des threads...
@@ -46,10 +46,6 @@ def main():
                 sock.close()
                 ardu.close()
 
-        sock.join()
-        ardu.join()
-        sock.close()
-        ardu.close()
 
 if __name__ == '__main__':
         main()

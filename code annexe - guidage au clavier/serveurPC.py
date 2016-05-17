@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #coding:utf-8
 """
-	Autor: Cyprien
+    Autor: Cyprien
   Purpose: Partie serveur (sur PC) du guidage clavier
 """
 
@@ -33,11 +33,11 @@ def clientthread(conn):
 #########################################################
 
 #########################################################
-#prend en arguement une liste de deux entiers compris entre 0 et MAX_SPEED
 #envoie la commande des moteurs à la Pi
 def envoiCommande():
     global commande
-    s="speed0;"
+    
+    s="#speedO;"
     s+=str(commande[0])
     s+=";"
     s+=str(commande[1])
@@ -47,29 +47,44 @@ def envoiCommande():
 #########################################################
 
 #########################################################
-#fonction executées lors d'un evenement clavier
-#a chaque evenement clavier, on met à jour la commande et on l'envoie
+#fonctions executées lors d'un evenement clavier
+
 
 def onKeyPress(event):
     global commande
+    global spam
 
-    if (event.keysym=='Up'):
-        commande[0]+=MAX_SPEED;
-        commande[0]+=MAX_SPEED;
-    elif (event.keysym=='Down'):
-        commande[0]-=MAX_SPEED;
-        commande[0]-=MAX_SPEED;
+    if (not spam):
+        spam = True
         
+        if (event.keysym=='e'):
+            commande[0]=100
+        elif (event.keysym=='d'):
+            commande[0]=-100
+        elif (event.keysym=='o'):
+            commande[1]=100
+        elif (event.keysym=='l'):
+            commande[1]=-100
+           
+        envoiCommande()
+
     
-    envoiCommande()
 
 
 def onKeyRelease(event):
     global commande
+    global spam
 
-    if (event.keysym=='Up'):
-        commande[0]-=MAX_SPEED;
-        commande[0]-=MAX_SPEED;
+    spam = False
+
+    if (event.keysym=='e'):
+        commande[0]=0
+    elif (event.keysym=='d'):
+        commande[1]=0
+    elif (event.keysym=='o'):
+        commande[0]=0
+    elif (event.keysym=='l'):
+        commande[1]=0
 
     envoiCommande()
 
@@ -87,12 +102,14 @@ text.pack()
 root.bind('<KeyPress>', onKeyPress)
 root.bind('<KeyRelease>', onKeyRelease)
 
-commande=[0,0]
 
+#variables globales utilisées pour la commande au clavier
+commande=[0,0]
+spam = False
 
 #creation et initialisation du socket
-HOST = '10.0.0.202'
-PORT = 1111
+HOST = '10.0.0.7' #Adresse de l'HOTE (donc du PC)
+PORT = 1115
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print 'Socket created'
@@ -109,17 +126,15 @@ s.listen(True)
 print 'Socket now listening'
 
 
-while 1:
-    print 'Wait to accept a connection'
-    conn, addr = s.accept() 
-    print 'Connected with ' + addr[0] + ':' + str(addr[1]) 
 
-    
-    #créé un nouveau thread pour gerer la reception de données
-    start_new_thread(clientthread ,(conn,))
+print 'Wait to accept a connection'
+conn, addr = s.accept()
+print 'Connected with ' + addr[0] + ':' + str(addr[1]) 
 
-    #boucle du thread principal qui gère les envois de données
-    root.mainloop()
-    #conn.send(a)
+#créé un nouveau thread pour gerer la reception de données
+start_new_thread(clientthread ,(conn,))
 
+#boucle du thread principal qui gère les envois de données
+root.mainloop()
+#conn.send(a)
 s.close()

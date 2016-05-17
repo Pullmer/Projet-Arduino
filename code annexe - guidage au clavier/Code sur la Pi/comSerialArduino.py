@@ -22,9 +22,7 @@ class SerialArduino(threading.Thread):
         self.instanceSock = None # Instance communication socket
         self.serialArduino = serial.Serial('/dev/ttyACM0', 115200) # Ouverture port série
         self.serialArduino.flushInput() # Vide le port série
-        self.checkSerialCom() # Vérification de la communication
-        print("Connected to arduino")
-
+        
     #----------------------------------------------------------------------
     def setInstanceSocket(self, s):
         """Lien vers l'instance du socket pour envoyer des données vers le PC"""
@@ -33,6 +31,9 @@ class SerialArduino(threading.Thread):
     #----------------------------------------------------------------------
     def run(self):
         """Boucle thread"""
+        if self.checkSerialCom():
+            print("Connected to arduino")
+        
         while not self.kill_received:
             a = self.Read() # Lecture des données venant de l'Arduino
             if a is not "":
@@ -43,18 +44,32 @@ class SerialArduino(threading.Thread):
     #----------------------------------------------------------------------
     def checkSerialCom(self):
         """Teste la communication serial"""
-        while("pong" not in self.Read()): # Attente d'une réponse de l'aduino
+
+        pingCounter = 0
+        
+        while(("pong" not in self.Read()) and (pingCounter<50)): # Attente d'une réponse de l'arduino
             self.Send("#ping;")
+            pingCounter=pingCounter+1
             print("Ping sent...")
             time.sleep(0.2)
-
-        print("Received pong !")
+            
+        if (pingCounter>=50):
+            print("Ping test failed after 50 retries")
+            self.kill_received = True
+            if self.instanceSock is not None:
+                self.instanceSock.kill_received = True
+            return False
+        else:
+            print("Received pong !")
+            return True
 
     #----------------------------------------------------------------------
     def Send(self, data):
         """Envoie data sur le port série de l'arduino"""
+
         try:
             if len(data) > 0 and data is not None:
+                print("Ecriture des données suivantes sur le port série : "+data)
                 self.serialArduino.write(data) # Ecriture des données sur le port série
         except:
             print("Erreur transmission serie !") # Fermeture du thread en cas d'erreur
