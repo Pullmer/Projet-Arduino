@@ -22,6 +22,8 @@ class Com(threading.Thread):
         self.ip = host
         self.port = port
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Définition du socket
+
+        print 'Socket de communication créé. Tentative de connexion'
         self.sock.connect((host, port)) # Connexion au socket
         print("Socket connected to " + host + ":" + str(port))
 

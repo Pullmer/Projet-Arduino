@@ -91,7 +91,7 @@ commande=[0,0]
 
 
 #creation et initialisation du socket
-HOST = ''
+HOST = '10.0.0.202'
 PORT = 1111
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
