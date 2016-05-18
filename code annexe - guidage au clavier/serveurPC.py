@@ -23,8 +23,10 @@ def clientthread(conn):
         
         data = conn.recv(1024)
 
-        print data
+        print("Raw : "+data)
         #gérer les données recues ici
+        if "Batterie" in data:
+            LabelBatterie.config(text="Niveau Batterie : " + data[(len(data)-4):(len(data))])
         
         if not data:
             break
@@ -37,13 +39,13 @@ def clientthread(conn):
 def envoiCommande():
     global commande
     
-    s="#speedO;"
-    s+=str(commande[0])
-    s+=";"
-    s+=str(commande[1])
-    s+=";"
-    print 'Commande envoyée : ' + s
-    conn.send(s)
+    comm="#speedO;"
+    comm+=str(commande[0])
+    comm+=";"
+    comm+=str(commande[1])
+    comm+=";"
+    print 'Commande envoyée : ' + comm
+    conn.send(comm)
 #########################################################
 
 #########################################################
@@ -52,60 +54,190 @@ def envoiCommande():
 
 def onKeyPress(event):
     global commande
-    global spam
+    global spamG
+    global spamD
 
-    if (not spam):
-        spam = True
-        
-        if (event.keysym=='e'):
-            commande[0]=100
-        elif (event.keysym=='d'):
-            commande[0]=-100
-        elif (event.keysym=='o'):
-            commande[1]=100
-        elif (event.keysym=='l'):
-            commande[1]=-100
-           
+
+    if (event.keysym=='e') and (not spamG):
+        spamG = True
+        commande[0]=100
         envoiCommande()
-
+    elif (event.keysym=='d') and (not spamG):
+        spamG = True
+        commande[0]=-100
+        envoiCommande()
+    elif (event.keysym=='o') and (not spamD):
+        spamD = True
+        commande[1]=100
+        envoiCommande()
+    elif (event.keysym=='l') and (not spamD):
+        spamD = True
+        commande[1]=-100
+        envoiCommande()
     
 
 
 def onKeyRelease(event):
     global commande
-    global spam
+    global spamG
+    global spamD
 
-    spam = False
+
 
     if (event.keysym=='e'):
         commande[0]=0
+        spamG = False
     elif (event.keysym=='d'):
-        commande[1]=0
-    elif (event.keysym=='o'):
         commande[0]=0
+        spamG = False
+    elif (event.keysym=='o'):
+        commande[1]=0
+        spamD = False
     elif (event.keysym=='l'):
         commande[1]=0
+        spamD = False
 
     envoiCommande()
 
 
 #########################################################
 
+#########################################################
+#envoie commande avancer
+def goUp(event):
 
-#creation de la fenetre
+    commande[0]=100
+    commande[1]=100
+    envoiCommande()
+    
+#########################################################
+
+#########################################################
+#envoie commande reculer
+def goDown(event):
+
+    commande[0]=-100
+    commande[1]=-100
+    envoiCommande()
+    
+#########################################################
+
+#########################################################
+#envoie commande tourner à gauche
+def goLeft(event):
+
+    commande[0]=-60
+    commande[1]=+60
+    envoiCommande()
+    
+#########################################################
+
+#########################################################
+#envoie commande tourner à droite
+def goRight(event):
+
+    commande[0]=60
+    commande[1]=-60
+    envoiCommande()
+    
+#########################################################
+
+
+#########################################################
+#envoi d'une commande nulle
+def pasGo(event):
+
+    commande[0]=0
+    commande[1]=0
+    envoiCommande()
+    
+#########################################################
+
+#########################################################
+#envoie la demande de niveau batterie
+def askBat():
+
+    comm="#bat_level;"
+    conn.send(comm)
+    
+#########################################################
+
+#########################################################
+#prend une photo (pas encore implémenté sur la Pi
+def askForPic():
+
+    comm="#picture;"
+    conn.send(comm)
+    
+#########################################################
+
+#########################################################
+#envoie la commande de coupure de connexion à la Pi et quitte tk
+def quitter():
+
+    comm="#quit;"
+    conn.send(comm)
+    s.close()
+    root.destroy()
+    
+#########################################################
+
+#creation de la fenetre et element graphiques
 root = tk.Tk()
-root.geometry('300x200')
-text = tk.Text(root, background='black', foreground='white', font=('Comic Sans MS', 12))
-text.pack()
+root.geometry('800x400')
+
+root.resizable(0,0)
+
+tk.Canvas(root, width=480, height=380, bg='grey').pack(side=tk.LEFT, padx=5, pady=5)
+
+LabelFrameControles = tk.LabelFrame(root, borderwidth=2,text="Controles", relief=tk.GROOVE, height=370, width=280)
+LabelFrameControles.pack(side=tk.LEFT, padx=5, pady=5)
+LabelFrameControles.pack_propagate(0) #Empèche le frame de changer sa taille 
+
+LabelFrameDirections = tk.LabelFrame(LabelFrameControles, borderwidth=2, text="Directions", relief=tk.GROOVE, height=120, width=160)
+LabelFrameDirections.pack(side=tk.TOP)
+LabelFrameDirections.pack_propagate(0)
+
+ButtonUp=tk.Button(LabelFrameDirections,text="Avancer")
+ButtonUp.pack(side=tk.TOP)
+ButtonDown=tk.Button(LabelFrameDirections,text="Reculer")
+ButtonDown.pack(side=tk.BOTTOM)
+ButtonLeft=tk.Button(LabelFrameDirections,text="Gauche")
+ButtonLeft.pack(side=tk.LEFT)
+ButtonRight=tk.Button(LabelFrameDirections,text="Droite")
+ButtonRight.pack(side=tk.RIGHT)
+
+ButtonPic=tk.Button(LabelFrameControles,text="Take Picture",command=askForPic)
+ButtonPic.pack(side=tk.TOP,pady=5)
+
+LabelBatterie=tk.Label(LabelFrameControles,text="Niveau Batterie : ----")
+LabelBatterie.pack(side=tk.TOP,pady=5)
+
+ButtonBatterie=tk.Button(LabelFrameControles,text="Lire niveau batterie", command=askBat)
+ButtonBatterie.pack(side=tk.TOP,pady=5)
+
+ButtonQuit=tk.Button(LabelFrameControles,text="Quitter", command=quitter)
+ButtonQuit.pack(side=tk.TOP,pady=5)
+
 
 #creation des liens entre evenement clavier et fonctions à executer
 root.bind('<KeyPress>', onKeyPress)
 root.bind('<KeyRelease>', onKeyRelease)
 
+ButtonUp.bind('<ButtonPress-1>',goUp)
+ButtonUp.bind('<ButtonRelease-1>',pasGo)
+ButtonDown.bind('<ButtonPress-1>',goDown)
+ButtonDown.bind('<ButtonRelease-1>',pasGo)
+ButtonLeft.bind('<ButtonPress-1>',goLeft)
+ButtonLeft.bind('<ButtonRelease-1>',pasGo)
+ButtonRight.bind('<ButtonPress-1>',goRight)
+ButtonRight.bind('<ButtonRelease-1>',pasGo)
 
 #variables globales utilisées pour la commande au clavier
 commande=[0,0]
-spam = False
+spamG = False
+spamD = False
+
 
 #creation et initialisation du socket
 HOST = '10.0.0.7' #Adresse de l'HOTE (donc du PC)

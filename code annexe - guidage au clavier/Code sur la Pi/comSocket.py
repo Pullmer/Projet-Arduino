@@ -69,10 +69,21 @@ class Com(threading.Thread):
         """Fonction traitement données venant du pc via le socket"""
         if len(r) > 0:
             print("Reception donnees venant du socket : " + str(r))
-            self.instanceArduino.Send(str(r))
+
+            if ("picture" in r):
+                self.takePicture()
+            elif ("quit" in r):
+                self.kill_received = True
+                self.instanceArduino.kill_received = True
+            else:
+                self.instanceArduino.Send(str(r))
 
     #----------------------------------------------------------------------
     def close(self):
         """Fermeture du socket"""
         self.sock.close()
         print("Socket " + self.ip + ":" + str(self.port) + " closed")
+        
+    #----------------------------------------------------------------------
+    def takePicture(self):
+        print("Kashing")
