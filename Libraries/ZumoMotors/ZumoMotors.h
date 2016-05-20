@@ -1,3 +1,12 @@
+/*! \file ZumoMotors.h
+ *
+ * See the ZumoMotors class reference for more information about this library.
+ *
+ * \class ZumoMotors ZumoMotors.h
+ * \brief Control motor speed and direction
+ * 
+ */
+
 #ifndef ZumoMotors_h
 #define ZumoMotors_h
 
@@ -18,8 +27,7 @@ class ZumoMotors
     static void setLeftSpeed(int speed);
     static void setRightSpeed(int speed);
     static void setSpeeds(int leftSpeed, int rightSpeed);
-    static void setSpeeds(int Speed);
-
+    
   private:
 
     static inline void init()
