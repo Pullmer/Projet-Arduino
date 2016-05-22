@@ -37,6 +37,7 @@ class Controller:
 		self.queue.put(id)
 		self.queue.put(ancienne_position)
 		self.queue.put(nouvelle_position)
+		self.rafraichirInformations(robot,id)
 		
 	# on modifie le dictionnaire des robots à chaque connexion d'un nouveau robot
 	def ajouterRobot(self,robot):
@@ -127,3 +128,11 @@ class Controller:
 	# éteint le serveur d'écoute des connexions afin de quitter le logiciel
 	def quitter(self):
 		self.serveur.eteindre()
+		
+	def rafraichirInformations(self,robot,id):
+		position = robot.getPosition()
+		batterie = robot.getBatterie()
+		self.queue.put("informations")
+		self.queue.put(id)
+		self.queue.put(position)
+		self.queue.put(batterie)

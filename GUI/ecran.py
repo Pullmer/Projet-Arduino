@@ -139,7 +139,9 @@ class Ecran():
 	def afficherInformations(self,frame):
 		l = LabelFrame(frame, text="Informations", padx=20, pady=20)
 		l.pack(side = TOP,fill="both", expand="yes")
-		Label(l, text="Robot 1:\nPosition : (X,Y)\nBatterie : 95%\n\nRobot 2:\nPosition : (X,Y)\nBatterie : 95%\n\nRobot 3:\nPosition : (X,Y)\nBatterie : 95%\n\n").pack()
+		self.text = "Robot 1:\nPas d'informations\n\nRobot 2:\nPas d'informations\n\nRobot 3:\nPas d'informations\n\n"
+		self.label = Label(l, text=self.text)
+		self.label.pack()
 		
 	# création des boutons et des actions associées
 	def creerBoutons(self,frame):
@@ -207,7 +209,26 @@ class Ecran():
 					if msg == "deconnexion":
 						id = self.queue.get(0)
 						self.dessin.effacerPoint(id)
+						tab = self.text.split("\n\n")
+						for i in range(1,3):
+							if i == id:
+								tab[i-1] = "Robot "+str(id)+":\nPas d'informations"
+								break
+						self.text = tab[0]+"\n\n"+tab[1]+"\n\n"+tab[2]+"\n\n"
+						self.label.config(text=self.text)
 						showinfo('deconnexion','Le robot ' + str(id) + ' vient de se deconnecter')
+						
+					if msg == "informations":
+						id = self.queue.get(0)
+						position = self.queue.get(0)
+						batterie = self.queue.get(0)
+						tab = self.text.split("\n\n")
+						for i in range(1,3):
+							if i == id:
+								tab[i-1] = "Robot "+str(id)+":\nPosition : "+str(position)+"\nBatterie : "+str(batterie)+"%"
+								break
+						self.text = tab[0]+"\n\n"+tab[1]+"\n\n"+tab[2]+"\n\n"
+						self.label.config(text=self.text)
 				except Queue.Empty:
 					pass	
 					
