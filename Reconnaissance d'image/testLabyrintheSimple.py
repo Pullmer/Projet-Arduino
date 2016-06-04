@@ -2,21 +2,20 @@
 #coding:utf-8
 """
   Author:  Jonas
-  Purpose: Test unitaire communication entre Arduino et PC
-  Created: 23/04/2016
+  Purpose: Test parcours labyrinthe simple
 """
 
-import comSocket
 import comSerialArduino
+import comSocket
 
-host = '10.0.0.5'
+host = '10.0.0.7'
 port = 1111
 
 #----------------------------------------------------------------------
 def main():
-    """Main function"""
+    """Fonction principale"""
     sock = comSocket.Com(host, port) # Instance communication socket
-    ardu = comSerialArduino.SerialArduino() # Instance communication serial
+    ardu = comSerialArduino.SerialArduino() # Instance communcation serial
 
     try:
         sock.setInstanceArduino(ardu)
@@ -25,7 +24,7 @@ def main():
         ardu.start() # Démarrage thread
 
         while not sock.kill_received and not ardu.kill_received:
-            pass # Boucle infinie pour tester le fonctionnement des threads...
+            pass # Boucle infinie (les threads de communication Serial et Socket continuent de fonctionner)
 
     except Exception as e:
         print(str(e)) # Si il y a interruption de la communication on ferme le port série et le socket
@@ -37,6 +36,7 @@ def main():
         ardu.join()
         sock.close()
         ardu.close()
+
 
 if __name__ == '__main__':
     main()

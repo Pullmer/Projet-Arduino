@@ -38,7 +38,7 @@ void loop()
       buffer = Serial.readStringUntil(';'); // on lit jusqu'au caractère de fin de trame
       if(buffer == "face" || buffer == "straight") setVitesseMot(getMaxSpeed(), getMaxSpeed());
       else if(buffer == "back") setVitesseMot(-getMaxSpeed(), -getMaxSpeed());
-      else if(buffer == "pause" || buffer == "stop") setVitesseMot(0);
+      else if(buffer == "pause" || buffer == "stop" || buffer == "workcompleted") setVitesseMot(0);
       else if(buffer == "droite") turn(0);
       else if(buffer == "gauche") turn(1);
       else if(buffer == "turnback") turn(2);
@@ -48,7 +48,6 @@ void loop()
       else if(buffer == "kd") setKd(Serial.readStringUntil(';').toFloat());
       else if(buffer == "setMaxSpeed") setMaxSpeed(Serial.readStringUntil(';').toInt());
       else if(buffer == "calibrage") calibrateSensors();
-      else if(buffer == "finish") setVitesseMot(0);
     }
     else Serial.read();
   }

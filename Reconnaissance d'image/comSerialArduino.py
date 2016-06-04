@@ -9,6 +9,7 @@
 import serial
 import time
 import threading
+import qrCodeDecoder
 
 ########################################################################
 class SerialArduino(threading.Thread):
@@ -23,6 +24,7 @@ class SerialArduino(threading.Thread):
         self.serialArduino = serial.Serial('/dev/ttyACM0', 115200) # Ouverture port série
         self.serialArduino.flushInput() # Vide le port série
         self.checkSerialCom() # Vérification de la communication
+        self.qrReader = qrCodeDecoder.QRDecode()
         print("Connected to arduino")
 
     #----------------------------------------------------------------------
@@ -46,7 +48,7 @@ class SerialArduino(threading.Thread):
         while("pong" not in self.Read()): # Attente d'une réponse de l'aduino
             self.Send("#ping;")
             print("Ping sent...")
-            time.sleep(0.2)
+            time.sleep(0.5)
 
         print("Received pong !")
 
@@ -90,9 +92,20 @@ class SerialArduino(threading.Thread):
                     self.instanceSock.Send("OBSTACLE_LEFT")
                 elif "pong" in i:
                     self.instanceSock.Send("PONG")
+                elif "lignedetected" in i:
+                    self.instanceSock.Send("LINE_DETECTED")
+                    time.sleep(1)
+                    coords = self.qrReader.decodeQRCode()
+                    coordX = coords[coords.find('X') + 1:coords.find(';')]
+                    coordY = coords[coords.find('Y') + 1:coords.find(';')]
+                    print("CoordX : {0} ; CoordY : {1}".format(coordX, coordY))
+                    self.instanceSock.Send("X : " + coordX)
+                    self.instanceSock.Send("Y : " + coordY)
+                    self.instanceSock.Send("DIRECTION?")
 
     #----------------------------------------------------------------------
     def close(self):
         """Fermeture du port série"""
         self.serialArduino.close()
-        print("Serial port closed")
+        self.qrReader.close()
+        print("Serial port and qrReader closed")

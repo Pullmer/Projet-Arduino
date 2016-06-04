@@ -8,7 +8,7 @@ import socket
 import sys
 from thread import *
 
-HOST = ''   
+HOST = ''
 PORT = 1111
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -48,8 +48,8 @@ while 1:
     #start new thread
     start_new_thread(clientthread ,(conn,))
     while 1:
-        
-        a = raw_input("entrez un msg : ")
+
+        a = raw_input()
         conn.send(a)
 
 s.close()

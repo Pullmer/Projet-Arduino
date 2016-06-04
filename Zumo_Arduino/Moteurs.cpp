@@ -118,7 +118,6 @@ void calibrateSensors()
     delay(20);
   }
   motors.setSpeeds(0);
-  Serial.println("Calibrage termine");
 }
 
 void setMaxSpeed(int x)
