@@ -1,108 +1,133 @@
 #include "Moteurs.h"
-#include "Centrale_inertielle.h"
 
-int MAX_SPEED_LEFT = 235;
-int MAX_SPEED_RIGHT = 239;
-
+#define LINE_THRESHOLD 800
+int MAX_SPEED = 300;
 int vitesse_mot[] = {0, 0};
 int previous_vitesse_mot[] = {0, 0};
-
-float consigne = 0;
-float erreur_precedente = 0;
-float somme_erreur = 0;
-float kp = 12.0;
-float kd = 0.0;
-float ki = 0.0;
+int erreur_precedente = 0;
+float kp = 0.5;
+float kd = 0.2;
+unsigned int sensors[6];
+boolean surLigneHorizontale = false;
 
 ZumoMotors motors;
+ZumoReflectanceSensorArray reflectanceSensors;
 
 void pid()
 {
-  float erreur = relativeHeading(consigne, averageHeading());
-  somme_erreur += erreur;
-  float output_pid = kp*erreur + ki*somme_erreur + kd*(erreur - erreur_precedente);
+  int pos = reflectanceSensors.readLine(sensors);
+  
+  if(isOnHorizontalLine()) // robot sur une ligne horizontale
+  {
+    if(!surLigneHorizontale)
+    {
+      setVitesseMot(0);
+      Serial.println("#lignedetected;");
+    }
+    surLigneHorizontale = true;
+  }
+  else
+  {
+    surLigneHorizontale = false;
+  }
+  
+  int erreur = pos - 2500;
+  int output_pid = kp*(float)erreur + kd*(float)(erreur - erreur_precedente);
   erreur_precedente = erreur;
   
-  output_pid = constrain(output_pid, -400, 400);
-  
-  //if(vitesse_mot[0] == 0 && vitesse_mot[1] == 0) motors.setSpeeds(-output_pid, output_pid); // robot à l'arrêt
+  int m1Speed = vitesse_mot[0] + output_pid;
+  int m2Speed = vitesse_mot[1] - output_pid;
+  if(!(abs(erreur) < 200 && vitesse_mot[0] == 0 && vitesse_mot[1] == 0)) motors.setSpeeds(m1Speed, m2Speed);
 }
 
-void resetPID()
-{
-  somme_erreur = 0;
-  erreur_precedente = 0;
-}
-
-void set_kp(float k)
+void setKp(float k)
 {
   kp = k;
 }
 
-void set_kd(float k)
+void setKd(float k)
 {
   kd = k;
 }
 
-void set_ki(float k)
+void turn(int mode)
 {
-  ki = k;
+  //mode = "0 : droite ; 1 : gauche ; 2 : demi-tour"
+  if(mode != 2)
+  {
+    motors.setSpeeds(MAX_SPEED);
+    delay(300);
+    motors.setSpeeds(0);
+  }
+
+  if(mode == 0) {motors.setSpeeds(400, -400);delay(500);}
+  if(mode == 1) {motors.setSpeeds(-400, 400);delay(500);}
+  if(mode == 2) {motors.setSpeeds(-400, 400);delay(1000);}
+
+  while(abs(reflectanceSensors.readLine(sensors) - 2500) > 300){delay(10);}
+  
+  setVitesseMot(MAX_SPEED);setVitesseMot(MAX_SPEED);
+  surLigneHorizontale = false;
 }
 
-void set_vitesse_mot(int leftspeed, int rightspeed, bool adjust)
+boolean isOnHorizontalLine()
 {
-  if(adjust)
-  {
-    leftspeed = constrain(leftspeed, -MAX_SPEED_LEFT, MAX_SPEED_LEFT);
-    rightspeed = constrain(rightspeed, -MAX_SPEED_RIGHT, MAX_SPEED_RIGHT);
-  }
-  
+  return sensors[0] > LINE_THRESHOLD && sensors[1] > LINE_THRESHOLD && sensors[2] > LINE_THRESHOLD && sensors[3] > LINE_THRESHOLD && sensors[4] > LINE_THRESHOLD && sensors[5] > LINE_THRESHOLD;
+}
+
+void setVitesseMot(int leftspeed, int rightspeed)
+{  
   previous_vitesse_mot[0] = vitesse_mot[0];
   previous_vitesse_mot[1] = vitesse_mot[1];
   vitesse_mot[0] = leftspeed;
   vitesse_mot[1] = rightspeed;
   
-  refresh_moteurs();
+  refreshMoteurs();
 }
 
-void set_vitesse_mot(int x, bool adjust)
+void setVitesseMot(int x)
 {
-  set_vitesse_mot(x, x, adjust);
+  setVitesseMot(x, x);
 }
 
-void refresh_moteurs()
+void refreshMoteurs()
 {
   motors.setSpeeds(vitesse_mot[0], vitesse_mot[1]);
   //motors.flipLeftMotor(true); // "true" pour le robot rapide uniquement
 }
 
-void run_previous_state_mot()
+void runPreviousStateMot()
 {
   vitesse_mot[0] = previous_vitesse_mot[0];
   vitesse_mot[1] = previous_vitesse_mot[1];
-  refresh_moteurs();
+  refreshMoteurs();
 }
 
-String getPIDParameters()
+void initReflectanceSensors()
 {
-  return "#kp:" + String(kp) + ";" + "#ki:" + String(ki) + ";" + "#kd:" + String(kd) + ";";
+  reflectanceSensors.init();
 }
 
-void set_maxSpeedLeft(int x)
+void calibrateSensors()
 {
-  MAX_SPEED_LEFT = x;
-}
-void set_maxSpeedRight(int x)
-{
-  MAX_SPEED_RIGHT = x;
+  delay(500);
+  motors.setSpeeds(400, -400);
+  for(int i = 0; i < 50; i++)
+  {
+    reflectanceSensors.calibrate();
+    delay(20);
+  }
+  motors.setSpeeds(0);
+  Serial.println("Calibrage termine");
 }
 
-int get_maxSpeedLeft()
+void setMaxSpeed(int x)
 {
-  return MAX_SPEED_LEFT;
+  MAX_SPEED = x;
 }
-int get_maxSpeedRight()
+
+int getMaxSpeed()
 {
-  return MAX_SPEED_RIGHT;
+  return MAX_SPEED;
 }
 

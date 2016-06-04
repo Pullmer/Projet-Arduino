@@ -8,7 +8,7 @@ float bat_level()
 void alerteBatterie()
 {
   float a = bat_level();
-  if(4 < a && a < 4.7)
+  if(4 < a && a < 4.8)
   {
     Serial.println("#lowbat;");
   }

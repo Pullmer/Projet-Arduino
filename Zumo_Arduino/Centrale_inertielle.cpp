@@ -1,5 +1,4 @@
 #include "Centrale_inertielle.h"
-#include "Moteurs.h"
 
 #define CALIBRATION_SAMPLES 200
 #define CRB_REG_M_2_5GAUSS 0x60 // CRB_REG_M value for magnetometer +/-2.5 gauss full scale
@@ -12,7 +11,7 @@ void calibrage() // Set calibrated values to compass.m_max and compass.m_min
   LSM303::vector<int16_t> running_min = {32767, 32767};
   LSM303::vector<int16_t> running_max = {-32767, -32767};
   
-  set_vitesse_mot(400, -400, false); // on fait tourner le robot sur lui même
+  setVitesseMot(400, -400); // on fait tourner le robot sur lui même
   
   for(int i = 0; i < CALIBRATION_SAMPLES; i++)
   {
@@ -24,7 +23,7 @@ void calibrage() // Set calibrated values to compass.m_max and compass.m_min
     delay(50);
   }
   
-  set_vitesse_mot(0, true);
+  setVitesseMot(0);
   
   compass.m_min.x = running_min.x;
   compass.m_min.y = running_min.y;
