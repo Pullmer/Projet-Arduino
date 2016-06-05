@@ -1,12 +1,12 @@
 #include "Moteurs.h"
 
 #define LINE_THRESHOLD 800
-int MAX_SPEED = 300;
+int MAX_SPEED = 125; // 300 pour robots lents, 125 robots rapides
 int vitesse_mot[] = {0, 0};
 int previous_vitesse_mot[] = {0, 0};
 int erreur_precedente = 0;
-float kp = 0.5;
-float kd = 0.2;
+float kp = 0.15; // 0.5 robots lents, 0.15 robots rapides
+float kd = 0.05; // 0.2 robots lents, 0.05 robots rapides
 unsigned int sensors[6];
 boolean surLigneHorizontale = false;
 
@@ -60,9 +60,9 @@ void turn(int mode)
     motors.setSpeeds(0);
   }
 
-  if(mode == 0) {motors.setSpeeds(400, -400);delay(500);}
-  if(mode == 1) {motors.setSpeeds(-400, 400);delay(500);}
-  if(mode == 2) {motors.setSpeeds(-400, 400);delay(1000);}
+  if(mode == 0) {motors.setSpeeds(150, -150);delay(500);} //400, -400 robots lents, 150, -150 robots rapides
+  if(mode == 1) {motors.setSpeeds(-150, 150);delay(500);} //-400, +400 robots lents, -150, 150 robots rapides
+  if(mode == 2) {motors.setSpeeds(-150, 150);delay(1000);} //-400, 400 robots lents, -150, 150 robots rapides
 
   while(abs(reflectanceSensors.readLine(sensors) - 2500) > 300){delay(10);}
   
@@ -93,7 +93,7 @@ void setVitesseMot(int x)
 void refreshMoteurs()
 {
   motors.setSpeeds(vitesse_mot[0], vitesse_mot[1]);
-  //motors.flipLeftMotor(true); // "true" pour le robot rapide uniquement
+  motors.flipLeftMotor(true); // "true" pour le robot rapide uniquement
 }
 
 void runPreviousStateMot()
@@ -111,7 +111,7 @@ void initReflectanceSensors()
 void calibrateSensors()
 {
   delay(500);
-  motors.setSpeeds(400, -400);
+  motors.setSpeeds(150, -150); // 400, -400 pour les robots lents, 150, -150 robots rapides
   for(int i = 0; i < 70; i++)
   {
     reflectanceSensors.calibrate();

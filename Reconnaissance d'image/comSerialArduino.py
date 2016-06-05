@@ -67,7 +67,10 @@ class SerialArduino(threading.Thread):
     def Read(self):
         """Lit données venant de l'arduino"""
         try:
-            return self.serialArduino.read(self.serialArduino.inWaiting()) if(self.serialArduino.inWaiting() > 0) else ""
+            if(self.serialArduino.inWaiting() > 0):
+                time.sleep(0.05) # On attend que les trames arrivent entièrement
+                return self.serialArduino.read(self.serialArduino.inWaiting())
+            return ""
         except:
             print("Erreur lecture port serie !") # Fermeture du thread en cas d'erreur
             self.kill_received = True
@@ -83,32 +86,33 @@ class SerialArduino(threading.Thread):
             data = r.split('#')
             for i in data:
                 if "bat_level" in i:
-                    self.instanceSock.Send("Batterie : " + i[i.find(':') + 1:i.find(';')])
+                    self.instanceSock.Send("Batterie : " + i[i.find(':') + 1:i.find(';')] + "\n")
                 elif "lowbat" in i:
-                    self.instanceSock.Send("LOW_BAT")
+                    self.instanceSock.Send("LOW_BAT" + "\n")
                 elif "obstacledetected" in i:
-                    self.instanceSock.Send("OBSTACLE_DETECTED")
+                    self.instanceSock.Send("OBSTACLE_DETECTED" + "\n")
                 elif "obstacleleft" in i:
-                    self.instanceSock.Send("OBSTACLE_LEFT")
+                    self.instanceSock.Send("OBSTACLE_LEFT" + "\n")
                 elif "pong" in i:
-                    self.instanceSock.Send("PONG")
+                    self.instanceSock.Send("PONG" + "\n")
                 elif "lignedetected" in i:
-                    self.instanceSock.Send("LINE_DETECTED")
+                    self.instanceSock.Send("LINE_DETECTED" + "\n")
                     time.sleep(1)
                     dataQR = self.qrReader.decodeQRCode() # Lecture du QRCODE codé sous la forme : "X0;Y0;D" ou "X52;Y1;F" par exemple
-                    while 'X0' not in dataQR:
+                    while 'X' not in dataQR and not self.kill_received:
                         print("Erreur lecture QRCode, retry...") # En cas d'échec on ré-essaye en boucle
                         dataQR = self.qrReader.decodeQRCode()
-                    coordX = coords[dataQR.find('X') + 1:dataQR.find(';')] # Extraction X
-                    coordY = coords[dataQR.find('Y') + 1:dataQR.find(';')] # Extraction Y
-                    print("CoordX : {0} ; CoordY : {1}".format(coordX, coordY)) # Affichage
+                    coordX = dataQR[dataQR.find('X') + 1:dataQR.find(';')] # Extraction X
+                    coordY = dataQR[dataQR.find('Y') + 1:dataQR.find(';', dataQR.find('Y'))] # Extraction Y
+                    print("CoordX : {0} et CoordY : {1}".format(coordX, coordY)) # Affichage
+
                     # Envoi des informations du QRCode à l'ordinateur
-                    self.instanceSock.Send("X : " + coordX)
-                    self.instanceSock.Send("Y : " + coordY)
-                    self.instanceSock.Send("Droite : OUI" if 'D' in dataQR else "Droite : NON")
-                    self.instanceSock.Send("Face : OUI" if 'F' in dataQR else "Face : NON")
-                    self.instanceSock.Send("Gauche : OUI" if 'G' in dataQR else "Gauche : NON")
-                    self.instanceSock.Send("DIRECTION?") # Demande de direction au serveur
+                    buffer = "DIRECTION?\n" +  "X : " + coordX + "\n" + "Y : " + coordY + "\n"
+                    buffer += "Droite : OUI" + "\n" if 'D' in dataQR else "Droite : NON" + "\n"
+                    buffer += "Face : OUI" + "\n" if 'F' in dataQR else "Face : NON" + "\n"
+                    buffer += "Gauche : OUI" + "\n" if 'G' in dataQR else "Gauche : NON" + "\n"
+                    buffer += "Batterie : 42"  + "\n"
+                    self.instanceSock.Send(buffer)
 
     #----------------------------------------------------------------------
     def close(self):
