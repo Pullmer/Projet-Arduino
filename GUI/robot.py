@@ -16,7 +16,7 @@ class Robot:
 			self.bat_level = 100   #niveau de batterie
 			self.liste_positions = [(0,0)]   #liste des dernières positions connues
 			self.position = (0,0)       #position du robot
-			self.intersection = ("NON","OUI","NON")   #forme de la dernière intersection parcourue
+			self.intersection = ("NON","OUI","NON","NON")   #forme de la dernière intersection parcourue
 			self.ancienne_position = (0,0)   #ancienne position du robot
 			self.mode = "exploration"
 			self.state = "ready"
@@ -28,6 +28,7 @@ class Robot:
 			
 	#traitement de la chaine de caractère reçue
 	def traiter(self,recu):
+		print(recu)
 		l = recu.split("\n")
 		
 		#action à faire si c'est une demande de direction
@@ -43,20 +44,21 @@ class Robot:
 			print(self.position)
 			
 			#on récupère la forme de l'intersection
-			droite = (l[3].split(" : ")[1])
-			face = (l[4].split(" : ")[1])
-			gauche = (l[5].split(" : ")[1])
-			self.intersection = (droite, face, gauche)
+			est = (l[3].split(" : ")[1])
+			nord = (l[4].split(" : ")[1])
+			ouest = (l[5].split(" : ")[1])
+			sud = (l[6].split(" : ")[1])
+			self.intersection = (est, nord, ouest, sud)
 			print(self.intersection)
 			
 			#on récupère le niveau de batterie
-			self.bat_level = float(l[6].split(" : ")[1])
+			self.bat_level = float(l[7].split(" : ")[1])
 			print(self.bat_level)
 			
 			self.controller.dessinerCheminParcouru(self,self.ancienne_position,self.position)   #on demande de tracer le chemin qui a été parcouru
-			self.labyrinthe.getSemaphore().acquire()
+			#self.labyrinthe.getSemaphore().acquire()
 			self.labyrinthe.demandeDirection(self)   #demande de direction au labyrinthe
-			self.labyrinthe.getSemaphore().release()
+			#self.labyrinthe.getSemaphore().release()
 			
 		elif l[0] == "DIRECTION?" and self.mode == "navigation":
 			if len(self.trajet)>0:
