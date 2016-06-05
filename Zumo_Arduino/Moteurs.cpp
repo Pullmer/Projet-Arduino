@@ -56,7 +56,7 @@ void turn(int mode)
   if(mode != 2)
   {
     motors.setSpeeds(MAX_SPEED);
-    delay(300);
+    delay(200);
     motors.setSpeeds(0);
   }
 
@@ -112,7 +112,7 @@ void calibrateSensors()
 {
   delay(500);
   motors.setSpeeds(400, -400);
-  for(int i = 0; i < 50; i++)
+  for(int i = 0; i < 70; i++)
   {
     reflectanceSensors.calibrate();
     delay(20);

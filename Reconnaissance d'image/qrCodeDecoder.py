@@ -21,7 +21,7 @@ class QRDecode:
 
     def decodeQRCode(self):
         """Prend une image et décode"""
-        camera.capture('qrcode.jpg')
+        self.camera.capture('qrcode.jpg')
         qrcode = qrtools.QR()
         qrcode.decode('qrcode.jpg')
         return qrcode.data_to_string()

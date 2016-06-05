@@ -17,7 +17,7 @@ class Com(threading.Thread):
     def __init__(self, host, port):
         """Constructor"""
         threading.Thread.__init__(self) # Initialisation du thread
-        self.kill_received = False # Destruction du thread
+        self.kill_received = False # Variable destruction du thread
         self.instanceArduino = None # Instance communication arduino
         self.ip = host
         self.port = port

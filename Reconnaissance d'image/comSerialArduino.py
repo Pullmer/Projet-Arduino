@@ -13,13 +13,13 @@ import qrCodeDecoder
 
 ########################################################################
 class SerialArduino(threading.Thread):
-    """Classe qui gère la com Serial Arduino, hérite de thread"""
+    """Classe qui gère la communication Serial Arduino, hérite de thread"""
 
     #----------------------------------------------------------------------
     def __init__(self):
         """Constructor"""
         threading.Thread.__init__(self) # Initialisation du thread
-        self.kill_received = False # Destruction du thread
+        self.kill_received = False # Variable destruction du thread
         self.instanceSock = None # Instance communication socket
         self.serialArduino = serial.Serial('/dev/ttyACM0', 115200) # Ouverture port série
         self.serialArduino.flushInput() # Vide le port série
@@ -69,7 +69,7 @@ class SerialArduino(threading.Thread):
         try:
             return self.serialArduino.read(self.serialArduino.inWaiting()) if(self.serialArduino.inWaiting() > 0) else ""
         except:
-            print("Erreur lecture port serie !") # Fermture du thread en cas d'erreur
+            print("Erreur lecture port serie !") # Fermeture du thread en cas d'erreur
             self.kill_received = True
             self.instanceSock.kill_received = True
 
@@ -95,17 +95,24 @@ class SerialArduino(threading.Thread):
                 elif "lignedetected" in i:
                     self.instanceSock.Send("LINE_DETECTED")
                     time.sleep(1)
-                    coords = self.qrReader.decodeQRCode()
-                    coordX = coords[coords.find('X') + 1:coords.find(';')]
-                    coordY = coords[coords.find('Y') + 1:coords.find(';')]
-                    print("CoordX : {0} ; CoordY : {1}".format(coordX, coordY))
+                    dataQR = self.qrReader.decodeQRCode() # Lecture du QRCODE codé sous la forme : "X0;Y0;D" ou "X52;Y1;F" par exemple
+                    while 'X0' not in dataQR:
+                        print("Erreur lecture QRCode, retry...") # En cas d'échec on ré-essaye en boucle
+                        dataQR = self.qrReader.decodeQRCode()
+                    coordX = coords[dataQR.find('X') + 1:dataQR.find(';')] # Extraction X
+                    coordY = coords[dataQR.find('Y') + 1:dataQR.find(';')] # Extraction Y
+                    print("CoordX : {0} ; CoordY : {1}".format(coordX, coordY)) # Affichage
+                    # Envoi des informations du QRCode à l'ordinateur
                     self.instanceSock.Send("X : " + coordX)
                     self.instanceSock.Send("Y : " + coordY)
-                    self.instanceSock.Send("DIRECTION?")
+                    self.instanceSock.Send("Droite : OUI" if 'D' in dataQR else "Droite : NON")
+                    self.instanceSock.Send("Face : OUI" if 'F' in dataQR else "Face : NON")
+                    self.instanceSock.Send("Gauche : OUI" if 'G' in dataQR else "Gauche : NON")
+                    self.instanceSock.Send("DIRECTION?") # Demande de direction au serveur
 
     #----------------------------------------------------------------------
     def close(self):
-        """Fermeture du port série"""
+        """Fermeture du port série et qrReader"""
         self.serialArduino.close()
         self.qrReader.close()
         print("Serial port and qrReader closed")
