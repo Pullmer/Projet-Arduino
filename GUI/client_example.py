@@ -1,5 +1,11 @@
 # coding: utf-8 
 
+"""
+	Author : Nicolas Gonçalves
+	Purpose : Simulation de la trajectoire d'un robot
+"""
+
+
 import time
 import socket
 import threading
@@ -24,9 +30,9 @@ class Reception(threading.Thread):
 			
 	def traiter(self,texte):
 		print(texte)
-		if texte == "pause":
+		if texte == "#pause;":
 			self.client.setState("pause")
-		elif texte == "start":
+		elif texte == "#start;":
 			self.client.setState("working")
 			
 

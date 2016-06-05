@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+"""
+	Author : Nicolas Gonçalves
+	Purpose : Fenetre graphique du logiciel
+"""
+
+
 import Tkinter
 from Tkinter import *
 from tkMessageBox import *

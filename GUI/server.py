@@ -1,5 +1,11 @@
 # coding: utf-8 
 
+"""
+	Author : Nicolas Gonçalves
+	Purpose : Envoi de messages entre robots et ordinateur
+"""
+
+
 import socket
 import threading
 from robot import *
@@ -22,10 +28,8 @@ class ClientThread(threading.Thread):
 			if self.deconnexion:
 				self.clientsocket.close()
 				break
-			try:
-				self.semaphoreSocket.acquire()
+			try:	
 				self.recevoir()
-				self.semaphoreSocket.release()
 			except:
 				pass
 				#self.robot.erreur()
@@ -34,7 +38,9 @@ class ClientThread(threading.Thread):
 	def recevoir(self):
 		try:	
 			r = self.clientsocket.recv(2048)
+			#self.semaphoreSocket.acquire()
 			self.robot.traiter(r)   #on traite la chaine de caractères reçue
+			#self.semaphoreSocket.release()
 		except socket.timeout:
 			pass
 	
@@ -54,6 +60,6 @@ class OrdreDirect():
 	
 	#méthode qui envoie une chaine de caractère à un robot
 	def envoyer(self,ordre):
-		self.semaphoreSocket.acquire()
+		#self.semaphoreSocket.acquire()
 		self.clientsocket.send(ordre)
-		self.semaphoreSocket.release()
+		#self.semaphoreSocket.release()

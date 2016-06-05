@@ -1,5 +1,11 @@
 # coding: utf-8 
 
+"""
+	Author : Nicolas Gonçalves
+	Purpose : Serveur d'écoute de connexion des robots
+"""
+
+
 import socket
 import threading
 from server import *

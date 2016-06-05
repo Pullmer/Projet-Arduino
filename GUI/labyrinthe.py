@@ -1,13 +1,21 @@
 # coding: utf-8
 
+"""
+	Author : Nicolas Gonçalves
+	Purpose : Classe Labyrinthe
+"""
+
+
 import networkx as nx
 from robot import *
+import threading
 
 class Labyrinthe:
 
 	def __init__(self,controller):
 		self.controller = controller   #référence vers le controller
 		self.labyrinthe = nx.Graph()   #graphe de représentation du labyrinthe
+		self.semaphore = threading.Semaphore(value=1)
 		self.labyrinthe.add_node(0, coords = (0,0))   #ajout du point de départ du labyrinthe
 		self.labyrinthe.add_node(1, coords = (0,0.1))
 		self.prochain = 2             #identifiant du prochain noeud à construire
@@ -193,24 +201,24 @@ class Labyrinthe:
 		dy = position_objectif[1]-coord2[1]
 		if Dx==0 and dx==0:
 			if Dy*dy>0:
-				return "tout droit"
+				return "#face;"
 			else:
-				return "demi-tour"
+				return "#turnback;"
 		if Dy==0 and dy==0:
 			if Dx*dx>0:
-				return "tout droit"
+				return "#face;"
 			else:
-				return "demi-tour"
+				return "#turnback;"
 		if Dx==0:
 			if Dy*dx>0:
-				return "droite"
+				return "#droite;"
 			else:
-				return "gauche"
+				return "#gauche;"
 		if Dy==0:
 			if Dx*dy>0:
-				return "gauche"
+				return "#gauche;"
 			else:
-				return "droite"
+				return "#droite;"
 	
 	# méthode qui renvoie la liste des noeuds pour relier de manière optimale deux points du labyrinthe
 	def disjktra(self, depart, arrivee):
@@ -253,21 +261,24 @@ class Labyrinthe:
 		
 		if Dx==0 and dx==0:
 			if Dy*dy>0:
-				return "tout droit"
+				return "#face;"
 			else:
-				return "demi-tour"
+				return "#turnback;"
 		if Dy==0 and dy==0:
 			if Dx*dx>0:
-				return "tout droit"
+				return "#face;"
 			else:
-				return "demi-tour"
+				return "#turnback;"
 		if Dx==0:
 			if Dy*dx>0:
-				return "droite"
+				return "#droite;"
 			else:
-				return "gauche"
+				return "#gauche;"
 		if Dy==0:
 			if Dx*dy>0:
-				return "gauche"
+				return "#gauche;"
 			else:
-				return "droite"
+				return "#droite;"
+				
+	def getSemaphore(self):
+		return self.semaphore

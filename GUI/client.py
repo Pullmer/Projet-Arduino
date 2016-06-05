@@ -1,5 +1,11 @@
 # coding: utf-8
 
+"""
+	Author : Nicolas Gonçalves
+	Purpose : Simulation de la trajectoire d'un robot
+"""
+
+
 import socket
 import time
 
@@ -10,7 +16,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(("127.0.0.1", 1111))
 ordre = s.recv(255)
 print(ordre)
-if ordre =="start":
+if ordre =="#face;":
 
 	i=1
 	y=y+5

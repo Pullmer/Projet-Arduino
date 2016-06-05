@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 
+"""
+	Author : Nicolas Gonçalves
+	Purpose : Contrôleur du logiciel
+"""
+
+
 from ecran import *
 from labyrinthe import *
 from serveur import *
 import Queue
 import time
+import threading
 
 class Controller:
 	
@@ -12,6 +19,7 @@ class Controller:
 	def __init__(self,fenetre):
 			self.fenetre = fenetre   # référence vers la fenetre d'affichage
 			self.queue = Queue.Queue()  # création de la file d'attente des tâches à faire quand on raffraichit l'écran
+			self.queueSemaphore = threading.Semaphore(value=1)
 			self.labyrinthe = Labyrinthe(self)   # création du graphe du labyrinthe
 			self.robots = {1:None , 2:None, 3:None}    # dictionnaire des robots (id : robot)
 			self.serveur = Serveur(self,self.labyrinthe) # création du serveur d'écoute
@@ -33,10 +41,12 @@ class Controller:
 				id = cle
 				break
 		# on met les infos dans la file d'attente
+		self.queueSemaphore.acquire()
 		self.queue.put("chemin")
 		self.queue.put(id)
 		self.queue.put(ancienne_position)
 		self.queue.put(nouvelle_position)
+		self.queueSemaphore.release()
 		self.rafraichirInformations(robot,id)
 		
 	# on modifie le dictionnaire des robots à chaque connexion d'un nouveau robot
@@ -47,8 +57,10 @@ class Controller:
 				id = cle
 				self.robots[cle] = robot
 				break
+		self.queueSemaphore.acquire()
 		self.queue.put("nouveau robot")
 		self.queue.put(id)
+		self.queueSemaphore.release()
 		
 	# permet de récupérer les infos relatives à un robot afin de les afficher grâce à la file d'attente
 	def details(self,id):
@@ -57,14 +69,18 @@ class Controller:
 			ip = robot.getIP()
 			position = robot.getPosition()
 			batterie = robot.getBatterie()
+			self.queueSemaphore.acquire()
 			self.queue.put("details")
 			self.queue.put(id)
 			self.queue.put(ip)
 			self.queue.put(position)
 			self.queue.put(batterie)
+			self.queueSemaphore.release()
 		else:
+			self.queueSemaphore.acquire()
 			self.queue.put("details")
 			self.queue.put("erreur")
+			self.queueSemaphore.release()
 		
 	# on lance le serveur d'écoute des connexions
 	def lancerServeur(self):
@@ -90,8 +106,10 @@ class Controller:
 				id = cle
 				self.robots[cle] = None
 				break
+		self.queueSemaphore.acquire()
 		self.queue.put("deconnexion")
 		self.queue.put(id)
+		self.queueSemaphore.release()
 		
 	# on donne un ordre de navigation vers une destination précise à un robot d'identifiant donné
 	def aller(self, id, destination):
@@ -129,10 +147,24 @@ class Controller:
 	def quitter(self):
 		self.serveur.eteindre()
 		
+	# permet de rafraichir les infos relatives à un robot afin de les afficher grâce à la file d'attente
 	def rafraichirInformations(self,robot,id):
 		position = robot.getPosition()
 		batterie = robot.getBatterie()
+		self.queueSemaphore.acquire()
 		self.queue.put("informations")
 		self.queue.put(id)
 		self.queue.put(position)
 		self.queue.put(batterie)
+		self.queueSemaphore.release()
+		
+	# envoi d'une commande moteur au robot d'identifiant donné
+	def envoiCommande(self,commande,id):
+		robot = self.robots.get(id)
+		comm="#speedO;"
+		comm+=str(commande[0])
+		comm+=";"
+		comm+=str(commande[1])
+		comm+=";"
+		print 'Commande envoyée : ' + comm
+		robot.ordreDirect.envoyer(comm)

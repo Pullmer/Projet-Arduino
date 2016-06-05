@@ -1,3 +1,10 @@
+# coding: utf-8 
+
+"""
+	Author : Nicolas Gonçalves
+	Purpose : Main du logiciel
+"""
+
 import Tkinter
 from Tkinter import *
 from controller import *

@@ -1,5 +1,11 @@
 # coding: utf-8
 
+"""
+	Author : Nicolas Gonçalves
+	Purpose : Classe Robot
+"""
+
+
 class Robot:
 
 	def __init__(self,socket,ip, port,labyrinthe,controller,ordreDirect):
@@ -48,7 +54,9 @@ class Robot:
 			print(self.bat_level)
 			
 			self.controller.dessinerCheminParcouru(self,self.ancienne_position,self.position)   #on demande de tracer le chemin qui a été parcouru
+			self.labyrinthe.getSemaphore().acquire()
 			self.labyrinthe.demandeDirection(self)   #demande de direction au labyrinthe
+			self.labyrinthe.getSemaphore().release()
 			
 		elif l[0] == "DIRECTION?" and self.mode == "navigation":
 			if len(self.trajet)>0:
@@ -70,7 +78,7 @@ class Robot:
 					self.trajet.remove(0)
 				self.donnerOrdre(direction)
 			else:
-				self.donnerOrdre("workcompleted")
+				self.donnerOrdre("#workcompleted;")
 				self.state = "ready"
 			
 		elif l[0] == "CLOSE_CONNEXION":
@@ -112,12 +120,12 @@ class Robot:
 		
 	#méthode qui demande l'arret du robot
 	def stop(self):
-		self.ordreDirect.envoyer("pause")
+		self.ordreDirect.envoyer("#pause;")
 		self.state = "pause"
 		
 	# on demande le départ du robot
 	def go(self):
-		self.ordreDirect.envoyer("start")
+		self.ordreDirect.envoyer("#face;")
 		self.state = "ready"
 		
 	def erreur(self):
@@ -137,3 +145,4 @@ class Robot:
 	# retourne l'état du robot
 	def getState(self):
 		return self.state
+		

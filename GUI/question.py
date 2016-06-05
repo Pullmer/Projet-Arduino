@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
 
+"""
+	Author : Nicolas Gonçalves
+	Purpose : Classe des fenêtres de questions
+"""
+
+
 import Tkinter
 from Tkinter import *
 from tkMessageBox import *
+from controle_manuel import *
 
 # classe de la fenêtre d'affichage de la selection du robot qui doit se déplacer à un endroit sélectionné
 class Question(Tkinter.Toplevel):
@@ -44,6 +51,7 @@ class Pause(Tkinter.Toplevel):
 	# constructeur de classe
 	def __init__(self,fenetre,controller):
 		Tkinter.Toplevel.__init__(self,fenetre)
+		self.fenetre = fenetre
 		self.controller = controller    # référence vers le controleur
 		
 		self.grab_set()
@@ -68,6 +76,16 @@ class Pause(Tkinter.Toplevel):
 					self.controller.pause(id)
 			else :
 				showinfo('erreur', "Ce robot n'est pas connecté")
+				
+		def manuel(id):
+			if self.controller.isConnected(id):
+				if self.controller.getEtatRobot(id) != "ready":
+					showinfo('erreur', "Ce robot ne peut actuellement pas passer en manuel")
+				else:	
+					controle = ControleManuel(self.fenetre,self.controller,id)
+					self.destroy()
+			else:
+				showinfo('erreur', "Ce robot n'est pas connecté")
 		
 		# frame 1
 		zone1 = Frame(self, borderwidth=2, relief=GROOVE)
@@ -75,11 +93,15 @@ class Pause(Tkinter.Toplevel):
 		
 		# frame2
 		zone2 = Frame(self, borderwidth=2, relief=GROOVE)
-		zone2.pack(side=RIGHT, padx=30, pady=30)
+		zone2.pack(side=LEFT, padx=30, pady=30)
 		
 		# frame3
 		zone3 = Frame(self, borderwidth=2, relief=GROOVE)
-		zone3.pack(side=BOTTOM, padx=30, pady=30)
+		zone3.pack(side=RIGHT, padx=30, pady=30)
+		
+		# frame4
+		zone4 = Frame(self, borderwidth=2, relief=GROOVE)
+		zone4.pack(side=BOTTOM, padx=30, pady=30)
 		
 		
 		# construction des boutons
@@ -97,5 +119,12 @@ class Pause(Tkinter.Toplevel):
 		bouton6=Button(zone2, text="Pause robot 3", command= lambda : pause_robot(3))
 		bouton6.pack(padx=10, pady=10)
 		
-		bouton7=Button(zone3, text="Fermer", command = self.destroy)
+		bouton7=Button(zone4, text="Fermer", command = self.destroy)
 		bouton7.pack(padx=10, pady=10)
+		
+		bouton8=Button(zone3, text="Mode manuel robot 1", command = lambda : manuel(1))
+		bouton8.pack(padx=10, pady=10)
+		bouton9=Button(zone3, text="Mode manuel robot 2", command= lambda : manuel(2))
+		bouton9.pack(padx=10, pady=10)
+		bouton10=Button(zone3, text="Mode manuel robot 3", command= lambda : manuel(3))
+		bouton10.pack(padx=10, pady=10)

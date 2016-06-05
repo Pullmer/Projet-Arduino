@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+"""
+	Author : Nicolas Gonçalves
+	Purpose : Zone de dessin du labyrinthe
+"""
+
+
 import Tkinter
 from Tkinter import *
 
