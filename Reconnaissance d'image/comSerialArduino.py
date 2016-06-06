@@ -108,10 +108,12 @@ class SerialArduino(threading.Thread):
 
                     # Envoi des informations du QRCode à l'ordinateur
                     buffer = "DIRECTION?\n" +  "X : " + coordX + "\n" + "Y : " + coordY + "\n"
-                    buffer += "Droite : OUI" + "\n" if 'D' in dataQR else "Droite : NON" + "\n"
-                    buffer += "Face : OUI" + "\n" if 'F' in dataQR else "Face : NON" + "\n"
-                    buffer += "Gauche : OUI" + "\n" if 'G' in dataQR else "Gauche : NON" + "\n"
-                    buffer += "Batterie : 42"  + "\n"
+                    buffer += "Est : OUI" + "\n" if 'E' in dataQR else "Est : NON" + "\n"
+                    buffer += "Nord : OUI" + "\n" if 'N' in dataQR else "Nord : NON" + "\n"
+                    buffer += "Ouest : OUI" + "\n" if 'O' in dataQR else "Ouest : NON" + "\n"
+                    buffer += "Sud : OUI" + "\n" if 'S' in dataQR else "Sud : NON" + "\n"
+                    buffer += "Batterie : 100"  + "\n"
+                    print(buffer)
                     self.instanceSock.Send(buffer)
 
     #----------------------------------------------------------------------
