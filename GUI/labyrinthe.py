@@ -132,7 +132,7 @@ class Labyrinthe:
 		ouest = (intersection[2].split(";")[0])
 		sud = (intersection[3].split(";")[0])
 		deplacementX = coord2[0] - coord1[0]
-		deplacementY = coord2[1] - coord2[0]
+		deplacementY = coord2[1] - coord1[1]
 		if est == "OUI":
 			if not (deplacementX < 0 and deplacementY == 0):
 				coord = (coord2[0]+0.1,coord2[1])   #coordonnée provisoire du carrefour est
@@ -141,7 +141,7 @@ class Labyrinthe:
 				self.prochain += 1
 				print("creation noeud ",nouveau_noeud," en :",coord)
 				self.ajouterChemin(nouvelle_position,nouveau_noeud,0)				#création du chemin entre les deux noeuds
-		elif ouest == "OUI":
+		if ouest == "OUI":
 			if not (deplacementX > 0 and deplacementY == 0):
 				coord = (coord2[0]-0.1,coord2[1])     #coordonnée provisoire du carrefour ouest
 				nouveau_noeud = self.prochain
@@ -149,7 +149,7 @@ class Labyrinthe:
 				self.prochain += 1
 				print("creation noeud ",nouveau_noeud," en :",coord)
 				self.ajouterChemin(nouvelle_position,nouveau_noeud,0)                 #création du chemin entre les deux noeuds
-		elif nord == "OUI":
+		if nord == "OUI":
 			if not (deplacementX == 0 and deplacementY < 0):
 				coord = (coord2[0],coord2[1]+0.1)      #coordonnée provisoire du carrefour nord
 				nouveau_noeud = self.prochain
@@ -157,7 +157,7 @@ class Labyrinthe:
 				self.prochain += 1
 				print("creation noeud ",nouveau_noeud," en :",coord)
 				self.ajouterChemin(nouvelle_position,nouveau_noeud,0)                 #création du chemin entre les deux noeuds
-		elif sud == "OUI":
+		if sud == "OUI":
 			if not (deplacementX == 0 and deplacementY > 0):
 				coord = (coord2[0],coord2[1]-0.1)      #coordonnée provisoire du carrefour sud
 				nouveau_noeud = self.prochain
