@@ -13,7 +13,7 @@ boolean surLigneHorizontale = false;
 ZumoMotors motors;
 ZumoReflectanceSensorArray reflectanceSensors;
 
-void pid()
+void pid() // boucle PID
 {
   int pos = reflectanceSensors.readLine(sensors);
   //Serial.println(String(sensors[0]) + " ; " + String(sensors[1]) + " ; " + String(sensors[2]) + " ; " + String(sensors[3]) + " ; " +  String(sensors[4])  + " ; " +  String(sensors[5]));
@@ -23,7 +23,7 @@ void pid()
     if(!surLigneHorizontale)
     {
       setVitesseMot(0);
-      Serial.println("#lignedetected;");
+      Serial.println("#lignedetected;"); // on informe la raspberryPi que le robot est sur un carrefour
     }
     surLigneHorizontale = true;
   }
@@ -53,7 +53,7 @@ void setKd(float k)
   kd = k;
 }
 
-void turn(int mode)
+void turn(int mode) // fonction pour tourner sur un carrefour
 {
   //mode = "0 : droite ; 1 : gauche ; 2 : demi-tour"
   if(mode != 2)
@@ -62,6 +62,7 @@ void turn(int mode)
     delay(200);
     motors.setSpeeds(0);
   }
+  
   // Rotations
   if(mode == 0) {motors.setSpeeds(150, -150);delay(500);} //400, -400 robots lents, 150, -150 robots rapides
   if(mode == 1) {motors.setSpeeds(-150, 150);delay(500);} //-400, +400 robots lents, -150, 150 robots rapides
@@ -74,7 +75,7 @@ void turn(int mode)
   surLigneHorizontale = false;
 }
 
-boolean isOnHorizontalLine()
+boolean isOnHorizontalLine() // détection carrefour
 {
   return sensors[0] > LINE_THRESHOLD && sensors[1] > LINE_THRESHOLD && sensors[2] > LINE_THRESHOLD && sensors[3] > LINE_THRESHOLD && sensors[4] > LINE_THRESHOLD && sensors[5] > LINE_THRESHOLD;
 }
@@ -112,7 +113,7 @@ void initReflectanceSensors()
   reflectanceSensors.init();
 }
 
-void calibrateSensors()
+void calibrateSensors() // calibrage capteurs IR
 {
   delay(500);
   motors.setSpeeds(150, -150); // 400, -400 pour les robots lents, 150, -150 robots rapides

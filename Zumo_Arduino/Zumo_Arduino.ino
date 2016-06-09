@@ -14,23 +14,23 @@ void setup()
 {
   Serial.begin(115200);
   
-  timer_obstacle.setInterval(300, alerteObstacle);
-  timer_batterie.setInterval(5000, alerteBatterie);
+  timer_obstacle.setInterval(300, alerteObstacle); // timer alerte obstacle
+  timer_batterie.setInterval(5000, alerteBatterie); // timer alerte batterie faible
   
-  refreshMoteurs();
-  initReflectanceSensors();
+  refreshMoteurs(); // initialisation moteurs
+  initReflectanceSensors(); // initialisation capteurs IR
   Serial.println("Attente bouton pour calibration");
   button.waitForButton();
-  calibrateSensors();
+  calibrateSensors(); // calibrage capteurs IR
 }
 
 void loop()
 {
   timer_obstacle.run();
   timer_batterie.run();
-  pid();
+  pid(); // boucle PID
   
-  if(Serial.available() > 0)
+  if(Serial.available() > 0) // boucle traitement des données liaison série
   {
     if(char(Serial.read()) == '#') // si on a un caractère de début de trame
     {
