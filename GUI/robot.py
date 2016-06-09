@@ -142,7 +142,7 @@ class Robot:
 		self.mode = "navigation"
 		depart = self.labyrinthe.rechercheNoeud(self.position)
 		arrivee = self.labyrinthe.rechercheNoeud(destination)
-		self.trajet = self.labyrinthe.dijsktra(depart, arrivee)
+		self.trajet = self.labyrinthe.dijkstra(depart, arrivee)
 		
 	# retourne l'état du robot
 	def getState(self):
