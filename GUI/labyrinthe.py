@@ -211,7 +211,7 @@ class Labyrinthe:
 				return "#droite;"
 	
 	# méthode qui renvoie la liste des noeuds pour relier de manière optimale deux points du labyrinthe
-	def disjktra(self, depart, arrivee):
+	def dijsktra(self, depart, arrivee):
 		nx.dijkstra_path(self.labyrinthe, depart, arrivee)   #algorithme de Dijkstra
 		
 	# méthode qui retourne une liste de coordonnées des carrefours ajacents à un de coordonnées spécifiées
