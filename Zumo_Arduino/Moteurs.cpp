@@ -1,6 +1,6 @@
 #include "Moteurs.h"
 
-#define LINE_THRESHOLD 800 // 800 normalement
+#define LINE_THRESHOLD 700 // 800 normalement
 int MAX_SPEED = 125; // 300 pour robots lents, 125 robots rapides
 int vitesse_mot[] = {0, 0};
 int previous_vitesse_mot[] = {0, 0};
@@ -26,10 +26,6 @@ void pid() // boucle PID
       Serial.println("#lignedetected;"); // on informe la raspberryPi que le robot est sur un carrefour
     }
     surLigneHorizontale = true;
-  }
-  else
-  {
-    surLigneHorizontale = false;
   }
   
   int erreur = pos - 2500;
@@ -71,7 +67,7 @@ void turn(int mode) // fonction pour tourner sur un carrefour
   while(abs(reflectanceSensors.readLine(sensors) - 2500) > 300){delay(10);}
   
   setVitesseMot(MAX_SPEED);setVitesseMot(MAX_SPEED);
-  delay(150); // on attend que le robot sorte du carrefour
+  delay(200); // on attend que le robot sorte du carrefour
   surLigneHorizontale = false;
 }
 

@@ -36,8 +36,8 @@ void loop()
     {
       buffer = "";
       buffer = Serial.readStringUntil(';'); // on lit jusqu'au caractère de fin de trame
-      if(buffer == "face" || buffer == "straight") setVitesseMot(getMaxSpeed(), getMaxSpeed());
-      else if(buffer == "back") setVitesseMot(-getMaxSpeed(), -getMaxSpeed());
+      if(buffer == "face" || buffer == "straight") {setVitesseMot(getMaxSpeed());delay(200);}
+      else if(buffer == "back") setVitesseMot(-getMaxSpeed());
       else if(buffer == "pause" || buffer == "stop" || buffer == "workcompleted") setVitesseMot(0);
       else if(buffer == "droite") turn(0);
       else if(buffer == "gauche") turn(1);
