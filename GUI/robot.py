@@ -38,8 +38,12 @@ class Robot:
 			Y = float(l[2].split(" : ")[1])
 			self.ancienne_position = self.position
 			self.position = (X,Y)
-			
-			if X != (self.liste_positions[-1])[0] or Y != (self.liste_positions[-1])[1]:
+			print(self.liste_positions)
+			if self.liste_positions == [(0,0)] and self.position == (0,0):
+				self.donnerOrdre("#workcompleted;")
+				self.state = "ready"
+				return
+			elif X != (self.liste_positions[-1])[0] or Y != (self.liste_positions[-1])[1]:
 				self.liste_positions.append(self.position)
 			print(self.position)
 			
@@ -61,27 +65,32 @@ class Robot:
 			#self.labyrinthe.getSemaphore().release()
 			
 		elif l[0] == "DIRECTION?" and self.mode == "navigation":
-			if len(self.trajet)>0:
+			print(self.trajet)
+			if len(self.trajet)>1:
+				print("test")
 				#on récupère la position
 				X = float(l[1].split(" : ")[1])
 				Y = float(l[2].split(" : ")[1])
 				self.ancienne_position = self.position
 				self.position = (X,Y)
 				
-				ancienne = self.labyrinthe.rechercheNoeud(self.ancienne)
+				ancienne = self.labyrinthe.rechercheNoeud(self.ancienne_position)
 				depart = self.labyrinthe.rechercheNoeud(self.position)
 				arrivee = self.trajet[-1]
 				
 				if self.labyrinthe.rechercheNoeud(self.position) != self.trajet[0]:
 					self.trajet = self.labyrinthe.dijsktra(depart,arrivee)
-					direction = self.labyrinthe.calculDirection(ancienne,depart,arrivee)
+					direction = self.labyrinthe.calculDirection(ancienne,depart,self.trajet[1])
+					del self.trajet[0]
 				else :
-					direction = self.labyrinthe.calculDirection(ancienne,depart,arrivee)
-					self.trajet.remove(0)
+					direction = self.labyrinthe.calculDirection(ancienne,depart,self.trajet[1])
+					del self.trajet[0]
+				print(direction)
 				self.donnerOrdre(direction)
 			else:
 				self.donnerOrdre("#workcompleted;")
 				self.state = "ready"
+			self.controller.dessinerCheminParcouru(self,self.ancienne_position,self.position)   #on demande de tracer le chemin qui a été parcouru
 			
 		elif l[0] == "CLOSE_CONNEXION":
 			self.socket.fermer()
@@ -118,7 +127,7 @@ class Robot:
 		
 	#méthode qui supprime la dernière position connue
 	def supprimerDernierePosition(self):
-		self.liste_positions.remove(self.liste_positions[-1])
+		del self.liste_positions[-1]
 		
 	#méthode qui demande l'arret du robot
 	def stop(self):
@@ -128,7 +137,7 @@ class Robot:
 	# on demande le départ du robot
 	def go(self):
 		self.ordreDirect.envoyer("#face;")
-		self.state = "ready"
+		self.state = "working"
 		
 	def erreur(self):
 		try:
@@ -140,9 +149,14 @@ class Robot:
 	# passe le robot en mode navigation vers une destination donnée
 	def naviguer(self, destination):
 		self.mode = "navigation"
+		self.state = "working"
+		self.ordreDirect.envoyer("#turnback;")
 		depart = self.labyrinthe.rechercheNoeud(self.position)
 		arrivee = self.labyrinthe.rechercheNoeud(destination)
-		self.trajet = self.labyrinthe.dijkstra(depart, arrivee)
+		self.trajet = self.labyrinthe.dijsktra(depart, arrivee)
+		print(self.trajet)
+		if self.position == (0,0) :
+			del self.trajet[0]
 		
 	# retourne l'état du robot
 	def getState(self):

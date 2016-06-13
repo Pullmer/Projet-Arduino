@@ -116,7 +116,6 @@ class Controller:
 		print("changement de mode du robot "+ str(id))
 		robot = self.robots.get(id)
 		robot.naviguer(destination)
-		robot.go()
 			
 	# retourne une description d'un carrefour de coordonnées données
 	def voirInfosIntersection(self,position):

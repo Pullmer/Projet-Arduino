@@ -183,8 +183,10 @@ class Labyrinthe:
 		
 		# si pas de possibilité, on revient au carrefour précédent
 		if objectif ==-1:
+			print("tout explore")
 			robot.supprimerDernierePosition()
 			position_objectif = robot.dernierePositionConnue()
+			print(position_objectif)
 		
 		# on retourne l'ordre de direction correpondant au noeud à aller découvrir
 		dx = position_objectif[0]-coord2[0]
@@ -211,8 +213,8 @@ class Labyrinthe:
 				return "#droite;"
 	
 	# méthode qui renvoie la liste des noeuds pour relier de manière optimale deux points du labyrinthe
-	def dijkstra(self, depart, arrivee):
-		nx.dijkstra_path(self.labyrinthe, depart, arrivee)   #algorithme de Dijkstra
+	def dijsktra(self, depart, arrivee):
+		return nx.dijkstra_path(self.labyrinthe, depart, arrivee)   #algorithme de Dijkstra
 		
 	# méthode qui retourne une liste de coordonnées des carrefours ajacents à un de coordonnées spécifiées
 	def getNoeudsAdjacents(self,coords):
