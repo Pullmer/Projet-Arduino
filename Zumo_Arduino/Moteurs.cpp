@@ -61,7 +61,7 @@ void turn(int mode) // fonction pour tourner sur un carrefour
   // Rotations
   if(mode == 0) {motors.setSpeeds(170, -170);delay(650);} //400, -400 robots lents, 150, -150 robots rapides
   if(mode == 1) {motors.setSpeeds(-170, 170);delay(650);} //-400, +400 robots lents, -150, 150 robots rapides
-  if(mode == 2) {motors.setSpeeds(-170, 170);delay(1250);} //-400, 400 robots lents, -150, 150 robots rapides
+  if(mode == 2) {motors.setSpeeds(-170, 170);delay(1400);} //-400, 400 robots lents, -150, 150 robots rapides
 
   //while(abs(reflectanceSensors.readLine(sensors) - 2500) > 300){delay(10);}
   
