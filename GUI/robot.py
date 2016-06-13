@@ -41,6 +41,7 @@ class Robot:
 			print(self.liste_positions)
 			if self.liste_positions == [(0,0)] and self.position == (0,0):
 				self.donnerOrdre("#workcompleted;")
+				self.controller.dessinerCheminParcouru(self,self.ancienne_position,self.position)   #on demande de tracer le chemin qui a été parcouru
 				self.controller.fini(self)
 				self.state = "ready"
 				return
