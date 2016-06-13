@@ -1,6 +1,6 @@
 #include "Moteurs.h"
 
-#define LINE_THRESHOLD 700 // 800 normalement
+#define LINE_THRESHOLD 200 // 800 normalement
 int MAX_SPEED = 125; // 300 pour robots lents, 125 robots rapides
 int vitesse_mot[] = {0, 0};
 int previous_vitesse_mot[] = {0, 0};
@@ -56,15 +56,14 @@ void turn(int mode) // fonction pour tourner sur un carrefour
   {
     motors.setSpeeds(MAX_SPEED); // le robot se positionne sur le carrefour
     delay(200);
-    motors.setSpeeds(0);
   }
   
   // Rotations
-  if(mode == 0) {motors.setSpeeds(150, -150);delay(500);} //400, -400 robots lents, 150, -150 robots rapides
-  if(mode == 1) {motors.setSpeeds(-150, 150);delay(500);} //-400, +400 robots lents, -150, 150 robots rapides
-  if(mode == 2) {motors.setSpeeds(-150, 150);delay(1000);} //-400, 400 robots lents, -150, 150 robots rapides
+  if(mode == 0) {motors.setSpeeds(170, -170);delay(650);} //400, -400 robots lents, 150, -150 robots rapides
+  if(mode == 1) {motors.setSpeeds(-170, 170);delay(650);} //-400, +400 robots lents, -150, 150 robots rapides
+  if(mode == 2) {motors.setSpeeds(-170, 170);delay(1250);} //-400, 400 robots lents, -150, 150 robots rapides
 
-  while(abs(reflectanceSensors.readLine(sensors) - 2500) > 300){delay(10);}
+  //while(abs(reflectanceSensors.readLine(sensors) - 2500) > 300){delay(10);}
   
   setVitesseMot(MAX_SPEED);setVitesseMot(MAX_SPEED);
   delay(200); // on attend que le robot sorte du carrefour
@@ -113,10 +112,10 @@ void calibrateSensors() // calibrage capteurs IR
 {
   delay(500);
   motors.setSpeeds(150, -150); // 400, -400 pour les robots lents, 150, -150 robots rapides
-  for(int i = 0; i < 70; i++)
+  for(int i = 0; i < 140; i++)
   {
     reflectanceSensors.calibrate();
-    delay(20);
+    delay(10);
   }
   motors.setSpeeds(0);
 }
@@ -130,4 +129,12 @@ int getMaxSpeed()
 {
   return MAX_SPEED;
 }
+
+void face(int x)
+{
+  setVitesseMot(x);
+  delay(200);
+  surLigneHorizontale = false;
+}
+
 

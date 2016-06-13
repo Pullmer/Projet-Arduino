@@ -18,5 +18,6 @@ void initReflectanceSensors();
 void calibrateSensors();
 void setMaxSpeed(int x);
 int getMaxSpeed();
+void face(int x);
 
 #endif
