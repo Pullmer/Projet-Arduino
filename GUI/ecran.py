@@ -69,7 +69,7 @@ class Ecran():
 		self.creerMenu(fenetre)   # création de la barre des menus
 		self.afficherInformations(zone2)   # création de la zone d'affichage de texte
 		self.creerBoutons(zone2)   # création des boutons
-		self.dessin = Dessin(zone1,400,400,'yellow')   #création de la zone de dessin du labyrinthe
+		self.dessin = Dessin(zone1,500,500,'yellow')   #création de la zone de dessin du labyrinthe
 		self.dessin.focus_set()
 		self.dessin.bind("<Key>", clavier)   # on active les évènements clavier
 		self.dessin.pack()   # on affiche la zone de dessin
@@ -189,10 +189,10 @@ class Ecran():
 						ancienne = self.queue.get(0)
 						nouvelle = self.queue.get(0)
 						
-						X1 = int(30*ancienne[0]+200)
-						Y1 = int(-30*ancienne[1]+400)
-						X2 = int(30*nouvelle[0]+200)
-						Y2 = int(-30*nouvelle[1]+400)
+						X1 = int(0.25*ancienne[0]+250)
+						Y1 = int(-0.25*ancienne[1]+250)
+						X2 = int(0.25*nouvelle[0]+200)
+						Y2 = int(-0.25*nouvelle[1]+500)
 						self.dessin.creerLigne((X1,Y1),(X2,Y2),4)
 						self.dessin.deplacerPoint(id,(X2,Y2))
 						

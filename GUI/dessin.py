@@ -58,8 +58,8 @@ class Dessin(Tkinter.Canvas):
 	
 	# déplacement du curseur
 	def deplacerCurseur(self,position):
-		X = int(30*position[0]+200)
-		Y = int(-30*position[1]+400)
+		X = int(0.25*position[0]+250)
+		Y = int(-0.25*position[1]+500)
 		coord = (X,Y)
 		self.coords(self.curseur,coord[0]-self.taille_points,coord[1]-self.taille_points,coord[0]+self.taille_points,coord[1]+self.taille_points)
 		self.position_curseur = position
