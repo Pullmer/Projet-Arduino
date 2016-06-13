@@ -110,7 +110,6 @@ class SerialArduino(threading.Thread):
                     buffer += "Nord : OUI" + "\n" if 'N' in dataQR else "Nord : NON" + "\n"
                     buffer += "Ouest : OUI" + "\n" if 'O' in dataQR else "Ouest : NON" + "\n"
                     buffer += "Sud : OUI" + "\n" if 'S' in dataQR else "Sud : NON" + "\n"
-                    buffer += "Batterie : 100"  + "\n"
                     print(buffer)
                     self.instanceSock.Send(buffer)
 

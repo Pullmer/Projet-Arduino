@@ -9,7 +9,7 @@ import comSerialArduino
 import comSocket
 import time
 
-host = '10.0.0.7'
+host = '10.0.0.8'
 port = 1111
 
 #----------------------------------------------------------------------
@@ -25,7 +25,7 @@ def main():
         ardu.start() # Démarrage thread
 
         while not sock.kill_received and not ardu.kill_received:
-            time.sleep(1) # Boucle infinie (les threads de communication Serial et Socket continuent de fonctionner)
+            time.sleep(0.5) # Boucle infinie (les threads de communication Serial et Socket continuent de fonctionner)
 
     except Exception as e:
         print(str(e)) # Si il y a interruption de la communication on ferme le port série et le socket
