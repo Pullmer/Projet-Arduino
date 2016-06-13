@@ -190,9 +190,9 @@ class Ecran():
 						nouvelle = self.queue.get(0)
 						
 						X1 = int(0.25*ancienne[0]+250)
-						Y1 = int(-0.25*ancienne[1]+250)
-						X2 = int(0.25*nouvelle[0]+200)
-						Y2 = int(-0.25*nouvelle[1]+500)
+						Y1 = int(-0.5*ancienne[1]+500)
+						X2 = int(0.25*nouvelle[0]+250)
+						Y2 = int(-0.5*nouvelle[1]+500)
 						self.dessin.creerLigne((X1,Y1),(X2,Y2),4)
 						self.dessin.deplacerPoint(id,(X2,Y2))
 						
@@ -235,6 +235,10 @@ class Ecran():
 								break
 						self.text = tab[0]+"\n\n"+tab[1]+"\n\n"+tab[2]+"\n\n"
 						self.label.config(text=self.text)
+						
+					if msg == "fini":
+						id = self.queue.get(0)
+						showinfo("information","Le robot "+ str(id) +" a terminé de travailler")
 				except Queue.Empty:
 					pass	
 					

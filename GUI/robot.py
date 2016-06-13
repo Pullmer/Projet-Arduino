@@ -41,6 +41,7 @@ class Robot:
 			print(self.liste_positions)
 			if self.liste_positions == [(0,0)] and self.position == (0,0):
 				self.donnerOrdre("#workcompleted;")
+				self.controller.fini(self)
 				self.state = "ready"
 				return
 			elif X != (self.liste_positions[-1])[0] or Y != (self.liste_positions[-1])[1]:
@@ -54,10 +55,6 @@ class Robot:
 			sud = (l[6].split(" : ")[1])
 			self.intersection = (est, nord, ouest, sud)
 			print(self.intersection)
-			
-			#on récupère le niveau de batterie
-			self.bat_level = float(l[7].split(" : ")[1])
-			print(self.bat_level)
 			
 			self.controller.dessinerCheminParcouru(self,self.ancienne_position,self.position)   #on demande de tracer le chemin qui a été parcouru
 			#self.labyrinthe.getSemaphore().acquire()
@@ -89,12 +86,16 @@ class Robot:
 				self.donnerOrdre(direction)
 			else:
 				self.donnerOrdre("#workcompleted;")
+				self.controller.fini(self)
 				self.state = "ready"
 			self.controller.dessinerCheminParcouru(self,self.ancienne_position,self.position)   #on demande de tracer le chemin qui a été parcouru
 			
 		elif l[0] == "CLOSE_CONNEXION":
 			self.socket.fermer()
 			self.controller.deconnexion(self)
+			
+		elif l[0] == "Batterie :":
+			self.bat_level = (float(l[1])-4.6)/0.8*100
 			
 			
 	#méthode qui demande l'envoi d'un ordre (une réponse) au robot

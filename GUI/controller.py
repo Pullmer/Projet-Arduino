@@ -167,3 +167,13 @@ class Controller:
 		comm+=";"
 		print 'Commande envoyée : ' + comm
 		robot.ordreDirect.envoyer(comm)
+		
+	def fini(self,robot):
+		for cle in self.robots.keys():
+			if self.robots.get(cle) == robot:
+				id = cle
+				break
+		self.queueSemaphore.acquire()
+		self.queue.put("fini")
+		self.queue.put(id)
+		self.queueSemaphore.release()
