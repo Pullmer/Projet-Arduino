@@ -190,9 +190,9 @@ class Ecran():
 						nouvelle = self.queue.get(0)
 						
 						X1 = int(0.25*ancienne[0]+250)
-						Y1 = int(-0.5*ancienne[1]+500)
+						Y1 = int(-0.25*ancienne[1]+375)
 						X2 = int(0.25*nouvelle[0]+250)
-						Y2 = int(-0.5*nouvelle[1]+500)
+						Y2 = int(-0.25*nouvelle[1]+375)
 						self.dessin.creerLigne((X1,Y1),(X2,Y2),4)
 						self.dessin.deplacerPoint(id,(X2,Y2))
 						

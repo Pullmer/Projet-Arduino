@@ -28,7 +28,7 @@ class Dessin(Tkinter.Canvas):
 	# création d'un point d'identifiant donné
 	def creerPoint(self,id):
 		couleur = self.couleurs.get(id)
-		point = self.create_oval(250-self.taille_points,500-self.taille_points,250+self.taille_points,500+self.taille_points,fill=couleur)
+		point = self.create_oval(250-self.taille_points,375-self.taille_points,250+self.taille_points,375+self.taille_points,fill=couleur)
 		self.points[id] = point
 		
 	# déplacement d'un point
@@ -47,7 +47,7 @@ class Dessin(Tkinter.Canvas):
 		
 	# affichage du curseur à sa création
 	def afficherCurseur(self):
-		self.curseur = self.create_oval(250-self.taille_points,500-self.taille_points,250+self.taille_points,500+self.taille_points,fill='black')
+		self.curseur = self.create_oval(250-self.taille_points,375-self.taille_points,250+self.taille_points,375+self.taille_points,fill='black')
 		self.curseur_utilise = True
 	
 	# effacement du curseur
@@ -59,7 +59,7 @@ class Dessin(Tkinter.Canvas):
 	# déplacement du curseur
 	def deplacerCurseur(self,position):
 		X = int(0.25*position[0]+250)
-		Y = int(-0.5*position[1]+500)
+		Y = int(-0.25*position[1]+375)
 		coord = (X,Y)
 		self.coords(self.curseur,coord[0]-self.taille_points,coord[1]-self.taille_points,coord[0]+self.taille_points,coord[1]+self.taille_points)
 		self.position_curseur = position
