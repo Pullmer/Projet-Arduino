@@ -1,7 +1,0 @@
-C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\bin\Debug\Interface PID.exe
-C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\bin\Debug\Interface PID.pdb
-C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\obj\x86\Debug\Interface_PID.Form1.resources
-C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\obj\x86\Debug\Interface_PID.Properties.Resources.resources
-C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\obj\x86\Debug\Interface PID.csproj.GenerateResource.Cache
-C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\obj\x86\Debug\Interface PID.exe
-C:\Users\Jonas\Documents\GitHub\Projet-Arduino\Interface PID\Interface PID\obj\x86\Debug\Interface PID.pdb
